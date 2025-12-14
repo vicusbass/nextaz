@@ -1,16 +1,46 @@
 ---
-import logo from '../assets/logo.svg';
-import cart from '../assets/cart.svg';
+import Logo from '../assets/logo.svg';
+import Cart from '../assets/cart.svg';
 ---
 
-<header class="flex items-center justify-between px-6 py-4">
-  <img src={logo.src} alt="nextaz" />
-  <nav class="flex flex-row space-x-4">
-    <a href="/">acasa</a>
-    <a href="/shop">shop</a>
-    <a href="/contact">contact</a>
-    <a href="/cart">
-      <img src={cart.src} alt="cos de cumparaturi" />
+<header
+  class="absolute top-8 right-0 left-0 z-50 flex items-center justify-between px-6 py-6 lg:px-30"
+>
+  <a href="/" class="h-7 w-auto">
+    <Logo />
+  </a>
+
+  <!-- Desktop Navigation -->
+  <nav class="hidden items-center gap-16 lg:flex">
+    <a href="/" class="nav-link">Acasă</a>
+    <a href="/shop" class="nav-link">Shop</a>
+    <a href="/galerie" class="nav-link">Galerie</a>
+    <a href="/contact" class="nav-link">Contact</a>
+    <a href="/cart" class="nav-link h-6 w-auto" aria-label="Coș de cumpărături">
+      <Cart />
     </a>
   </nav>
+
+  <!-- Mobile Navigation -->
+  <div class="flex items-center gap-6 lg:hidden">
+    <a href="/cart" class="relative" aria-label="Coș de cumpărături">
+      <Cart />
+      <span class="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full bg-red-600"></span>
+    </a>
+    <button
+      class="mobile-menu-toggle flex h-10 w-10 flex-col items-center justify-center gap-1 bg-black"
+      aria-label="Meniu"
+      aria-expanded="false"
+    >
+      <span class="block h-0.5 w-5 bg-white"></span>
+      <span class="block h-0.5 w-5 bg-white"></span>
+      <span class="block h-0.5 w-5 bg-white"></span>
+    </button>
+  </div>
 </header>
+
+<style>
+  .mobile-menu-toggle span {
+    transition: all 0.3s ease;
+  }
+</style>
