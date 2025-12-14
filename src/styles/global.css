@@ -26,7 +26,7 @@
    ============================================ */
 @layer components {
   .main-content {
-    flex: 1;
+    @apply flex-1;
   }
 
   .nav-link {
@@ -48,6 +48,10 @@
 
   .bg-gray {
     background-color: var(--color-gray);
+  }
+
+  .text-gray {
+    color: var(--color-gray);
   }
 
   .bg-gray-light {
