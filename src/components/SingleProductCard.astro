@@ -1,0 +1,72 @@
+---
+import { Image } from 'astro:assets';
+import type { SanityImageSource } from '@sanity/image-url';
+import { urlFor } from '../utils/sanity';
+
+interface Product {
+  _id: string;
+  name: string;
+  slug: { current: string };
+  image: SanityImageSource;
+  description?: string;
+  price: number;
+}
+
+interface Props {
+  product: Product;
+}
+
+const { product } = Astro.props;
+const { _id: id, name, slug, image, description, price } = product;
+
+const imageUrl = urlFor(image)?.width(800).url();
+---
+
+<article
+  class="flex flex-col overflow-hidden bg-white shadow-[10px_10px_60px_#0000000D] transition-all duration-300 hover:shadow-xl"
+  data-product-id={id}
+>
+  <div class="flex aspect-831/550 items-end justify-center overflow-hidden pb-8">
+    {
+      imageUrl ? (
+        <Image
+          src={imageUrl}
+          alt={name}
+          class="h-[85%] w-auto object-contain transition-transform duration-500 hover:scale-[1.2]"
+          inferSize
+        />
+      ) : (
+        <div class="bg-gray-light text-gray flex h-full w-full items-center justify-center text-sm">
+          <span>Imagine indisponibilă</span>
+        </div>
+      )
+    }
+  </div>
+
+  <div
+    class="flex flex-1 flex-col items-center gap-3 p-4 pb-8 text-center lg:gap-4 lg:px-6 lg:pt-6 lg:pb-24"
+  >
+    <a href={`/shop/${slug.current}`} class="flex flex-col gap-2 text-inherit no-underline">
+      <h3
+        class="hover:text-gray m-0 text-lg leading-tight font-bold text-black transition-colors duration-200 lg:text-xl"
+      >
+        {name}
+      </h3>
+      {description && <p class="text-gray m-0 text-sm font-normal lg:text-base">{description}</p>}
+    </a>
+
+    <p class="m-0 text-base font-bold text-black lg:text-lg">
+      {price.toFixed(2).replace('.', ',')} lei
+    </p>
+
+    <button
+      class="mt-auto w-max cursor-pointer border-none bg-black px-12 py-3 text-sm font-medium text-white transition-all duration-200 hover:bg-neutral-800 active:scale-[0.98] lg:px-14 lg:py-3.5"
+      data-product-id={id}
+      data-product-name={name}
+      data-product-price={price}
+      aria-label={`Adaugă ${name} în coș`}
+    >
+      Adaugă în coș
+    </button>
+  </div>
+</article>

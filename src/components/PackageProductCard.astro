@@ -1,0 +1,81 @@
+---
+import { Image } from 'astro:assets';
+import type { SanityImageSource } from '@sanity/image-url';
+import { urlFor } from '../utils/sanity';
+
+interface Product {
+  _id: string;
+  name: string;
+  slug: { current: string };
+  image: SanityImageSource;
+  description?: string;
+  price: number;
+}
+
+interface Props {
+  product: Product;
+}
+
+const { product } = Astro.props;
+const { _id: id, name, slug, image, description, price } = product;
+
+const imageUrl = urlFor(image)?.width(1200).height(600).url();
+---
+
+<article
+  class="flex flex-col overflow-hidden bg-white shadow-[10px_10px_60px_#0000000d] transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl"
+  data-product-id={id}
+>
+  <a
+    href={`/shop/${slug.current}`}
+    class="relative block aspect-video w-full overflow-hidden lg:aspect-21/9"
+  >
+    {
+      imageUrl ? (
+        <Image
+          src={imageUrl}
+          alt={name}
+          class="h-full w-full object-cover transition-transform duration-500 hover:scale-[1.03]"
+          width={1200}
+          height={600}
+        />
+      ) : (
+        <div class="text-gray flex h-full w-full items-center justify-center bg-[#f2f2f2] text-base">
+          <span>Imagine indisponibilă</span>
+        </div>
+      )
+    }
+  </a>
+
+  <div
+    class="flex flex-col gap-6 p-6 md:flex-row md:items-center md:justify-between md:p-8 lg:p-10 lg:px-12"
+  >
+    <div class="flex flex-col gap-2">
+      <a href={`/shop/${slug.current}`} class="group text-inherit no-underline">
+        <h3
+          class="group-hover:text-gray text-2xl leading-tight font-bold text-black transition-colors md:text-3xl lg:text-4xl"
+        >
+          {name}
+        </h3>
+      </a>
+
+      {description && <p class="text-gray text-base leading-normal">{description}</p>}
+    </div>
+
+    <div class="flex flex-col gap-4 md:flex-row md:items-center md:gap-8">
+      <p class="text-2xl font-bold text-black lg:text-3xl">
+        {price.toFixed(2).replace('.', ',')} lei
+      </p>
+
+      <button
+        class="self-start bg-black px-8 py-4 text-sm font-semibold tracking-wider text-white uppercase transition-all hover:bg-[#333] active:scale-98 lg:px-10 lg:py-5 lg:text-base"
+        data-product-id={id}
+        data-product-name={name}
+        data-product-price={price}
+        aria-label={`Adaugă ${name} în coș`}
+      >
+        Adaugă în coș
+      </button>
+    </div>
+  </div>
+</article>
