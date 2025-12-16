@@ -17,58 +17,53 @@ interface Props {
 }
 
 const { product } = Astro.props;
-const { _id: id, name, slug, image, description, price } = product;
+const { _id: id, name, image, description, price } = product;
 
 const imageUrl = urlFor(image)?.width(1200).height(600).url();
 ---
 
 <article
-  class="flex flex-col overflow-hidden bg-white shadow-[10px_10px_60px_#0000000d] transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl"
+  class="flex flex-col overflow-hidden shadow-[10px_10px_60px_#0000000d] transition-all duration-300 hover:shadow-2xl lg:flex-row"
   data-product-id={id}
 >
-  <a
-    href={`/shop/${slug.current}`}
-    class="relative block aspect-video w-full overflow-hidden lg:aspect-21/9"
+  <div
+    class="relative flex aspect-video w-full shrink-0 items-center justify-center overflow-hidden bg-transparent lg:aspect-square lg:w-1/2"
   >
     {
       imageUrl ? (
         <Image
           src={imageUrl}
           alt={name}
-          class="h-full w-full object-cover transition-transform duration-500 hover:scale-[1.03]"
+          class="h-full w-full object-contain transition-transform duration-500 hover:scale-[1.2]"
           width={1200}
           height={600}
         />
       ) : (
-        <div class="text-gray flex h-full w-full items-center justify-center bg-[#f2f2f2] text-base">
+        <div class="text-gray bg-gray-light flex h-full w-full items-center justify-center text-base">
           <span>Imagine indisponibilă</span>
         </div>
       )
     }
-  </a>
+  </div>
 
   <div
-    class="flex flex-col gap-6 p-6 md:flex-row md:items-center md:justify-between md:p-8 lg:p-10 lg:px-12"
+    class="flex flex-1 flex-col items-center justify-center gap-6 bg-white p-6 text-center lg:max-w-[500px] lg:items-start lg:gap-8 lg:px-24 lg:text-left"
   >
-    <div class="flex flex-col gap-2">
-      <a href={`/shop/${slug.current}`} class="group text-inherit no-underline">
-        <h3
-          class="group-hover:text-gray text-2xl leading-tight font-bold text-black transition-colors md:text-3xl lg:text-4xl"
-        >
-          {name}
-        </h3>
-      </a>
+    <div class="flex flex-col gap-4">
+      <h3 class="text-xl leading-tight font-bold text-black">
+        {name}
+      </h3>
 
-      {description && <p class="text-gray text-base leading-normal">{description}</p>}
+      {description && <p class="text-gray text-base leading-relaxed">{description}</p>}
     </div>
 
-    <div class="flex flex-col gap-4 md:flex-row md:items-center md:gap-8">
-      <p class="text-2xl font-bold text-black lg:text-3xl">
+    <div class="flex flex-col items-center gap-6 lg:items-start">
+      <p class="text-lg font-bold text-black">
         {price.toFixed(2).replace('.', ',')} lei
       </p>
 
       <button
-        class="self-start bg-black px-8 py-4 text-sm font-semibold tracking-wider text-white uppercase transition-all hover:bg-[#333] active:scale-98 lg:px-10 lg:py-5 lg:text-base"
+        class="btn-add-to-cart"
         data-product-id={id}
         data-product-name={name}
         data-product-price={price}

@@ -46,21 +46,19 @@ const imageUrl = urlFor(image)?.width(800).url();
   <div
     class="flex flex-1 flex-col items-center gap-3 p-4 pb-8 text-center lg:gap-4 lg:px-6 lg:pt-6 lg:pb-24"
   >
-    <a href={`/shop/${slug.current}`} class="flex flex-col gap-2 text-inherit no-underline">
-      <h3
-        class="hover:text-gray m-0 text-lg leading-tight font-bold text-black transition-colors duration-200 lg:text-xl"
-      >
+    <div class="flex flex-col gap-2">
+      <h3 class="m-0 text-xl leading-tight font-bold text-black">
         {name}
       </h3>
-      {description && <p class="text-gray m-0 text-sm font-normal lg:text-base">{description}</p>}
-    </a>
+      {description && <p class="text-gray m-0 text-base font-normal">{description}</p>}
+    </div>
 
-    <p class="m-0 text-base font-bold text-black lg:text-lg">
+    <p class="m-0 text-base font-bold text-black">
       {price.toFixed(2).replace('.', ',')} lei
     </p>
 
     <button
-      class="mt-auto w-max cursor-pointer border-none bg-black px-12 py-3 text-sm font-medium text-white transition-all duration-200 hover:bg-neutral-800 active:scale-[0.98] lg:px-14 lg:py-3.5"
+      class="btn-add-to-cart mt-auto"
       data-product-id={id}
       data-product-name={name}
       data-product-price={price}

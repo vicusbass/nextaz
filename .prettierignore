@@ -1,9 +1,14 @@
-dist/
+# Dependencies
 node_modules/
-.astro/
-.sanity/
-.env
-.env.*
 package-lock.json
-pnpm-lock.yaml
-yarn.lock
+
+# Build outputs
+dist/
+.astro/
+
+# Studio
+studio-nextaz/dist/
+studio-nextaz/node_modules/
+
+# Other
+.DS_Store
