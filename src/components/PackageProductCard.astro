@@ -1,0 +1,73 @@
+---
+import { Image } from 'astro:assets';
+import type { SanityImageSource } from '@sanity/image-url';
+import { urlFor } from '../utils/sanity';
+
+interface Product {
+  _id: string;
+  name: string;
+  slug: { current: string };
+  image: SanityImageSource;
+  description?: string;
+  price: number;
+}
+
+interface Props {
+  product: Product;
+}
+
+const { product } = Astro.props;
+const { _id: id, name, image, description, price } = product;
+
+const imageUrl = urlFor(image)?.width(1200).height(600).url();
+---
+
+<article class="product-card lg:flex-row" data-product-id={id}>
+  <div
+    class="relative flex aspect-video w-full shrink-0 items-center justify-center overflow-hidden bg-transparent lg:aspect-square lg:w-1/2"
+  >
+    {
+      imageUrl ? (
+        <Image
+          src={imageUrl}
+          alt={name}
+          class="h-full w-full object-contain transition-transform duration-500 hover:scale-[1.2]"
+          width={1200}
+          height={600}
+        />
+      ) : (
+        <div class="text-gray bg-gray-light flex h-full w-full items-center justify-center text-base">
+          <span>Imagine indisponibilă</span>
+        </div>
+      )
+    }
+  </div>
+
+  <div
+    class="flex flex-1 flex-col items-center justify-center gap-6 bg-white p-6 text-center lg:max-w-[500px] lg:items-start lg:gap-8 lg:px-24 lg:text-left"
+  >
+    <div class="flex flex-col gap-4">
+      <h3 class="text-xl leading-tight font-bold text-black">
+        {name}
+      </h3>
+
+      {description && <p class="text-gray text-base leading-relaxed">{description}</p>}
+    </div>
+
+    <div class="flex flex-col items-center gap-6 lg:items-start">
+      <p class="text-lg font-bold text-black">
+        {price.toFixed(2).replace('.', ',')} lei
+      </p>
+
+      <button
+        class="btn-add-to-cart"
+        data-product-id={id}
+        data-product-name={name}
+        data-product-price={price}
+        aria-label={`Adaugă ${name} în coș`}
+      >
+        Adaugă în coș
+      </button>
+    </div>
+  </div>
+</article>

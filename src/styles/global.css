@@ -1,13 +1,14 @@
-@import "tailwindcss";
-@plugin "@tailwindcss/typography";
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
 
 /* ============================================
    Theme - Custom CSS variables
    ============================================ */
 @theme {
   --color-gray: #909090;
-  --color-gray-light: #F2F2F2;
-  
+  --color-gray-light: #f2f2f2;
+  --color-bg-body: #0000000d;
+
   --font-body: 'Red Hat Display Variable', sans-serif;
 }
 
@@ -36,6 +37,26 @@
       @apply opacity-70;
     }
   }
+
+  .product-card {
+    @apply flex flex-col overflow-hidden shadow-[10px_10px_60px_#0000000d] transition-all duration-300;
+
+    &:hover {
+      @apply shadow-xl;
+    }
+  }
+
+  .btn-add-to-cart {
+    @apply w-max cursor-pointer border-none bg-black px-12 py-3 text-base font-medium text-white transition-all duration-200 lg:px-14 lg:py-3.5;
+
+    &:hover {
+      @apply bg-neutral-800;
+    }
+
+    &:active {
+      @apply scale-[0.98];
+    }
+  }
 }
 
 /* ============================================
@@ -56,6 +77,10 @@
 
   .bg-gray-light {
     background-color: var(--color-gray-light);
+  }
+
+  .bg-body {
+    background-color: var(--color-bg-body);
   }
 
   .hover-darken:hover {
