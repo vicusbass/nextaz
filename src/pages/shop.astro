@@ -26,7 +26,7 @@ const { data: shop } = await loadQuery<Shop>({ query: shopQuery });
 const products = shop?.products ?? [];
 
 // Separate products by type
-const singleWines = products.filter((p) => p.productType === 'single');
+const singleProducts = products.filter((p) => p.productType === 'single');
 const packages = products.filter((p) => p.productType === 'package' || p.productType === 'bundle');
 ---
 
@@ -63,18 +63,10 @@ const packages = products.filter((p) => p.productType === 'package' || p.product
   <section id="products" class="bg-white px-6 pb-16 lg:px-30 lg:pb-24">
     <!-- Single Wine Products Grid - 2 columns on desktop -->
     {
-      singleWines.length > 0 && (
+      singleProducts.length > 0 && (
         <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
-          {singleWines.map((product, index) => (
-            <div
-              class={
-                index === 0
-                  ? 'relative z-10 -mt-12 lg:-mt-16'
-                  : index === 1
-                    ? 'relative z-10 lg:-mt-16'
-                    : ''
-              }
-            >
+          {singleProducts.map((product, index) => (
+            <div class={index < 2 ? `relative z-10 lg:-mt-16 ${index === 0 ? '-mt-12' : ''}` : ''}>
               <SingleProductCard product={product} />
             </div>
           ))}
