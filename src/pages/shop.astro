@@ -2,10 +2,14 @@
 import Layout from '../layouts/Layout.astro';
 import { Image } from 'astro:assets';
 import heroImage from '../assets/shop/wine-hero.png';
+import bronze from '../assets/shop/bronze.png';
+import silver from '../assets/shop/silver.png';
+import gold from '../assets/shop/gold.png';
 import { loadQuery } from '../utils/loadQuery';
 import { shopQuery } from '../queries/shop';
 import SingleProductCard from '../components/SingleProductCard.astro';
 import PackageProductCard from '../components/PackageProductCard.astro';
+import BundleCard from '../components/BundleCard.astro';
 
 interface Product {
   _id: string;
@@ -17,17 +21,37 @@ interface Product {
   price: number;
 }
 
+interface Bundle {
+  name: string;
+  slug: { current: string };
+  heroName: string;
+  description: string;
+  price: number;
+}
+
 interface Shop {
   title: string;
   products: Product[];
+  bundles: Bundle[];
 }
 
 const { data: shop } = await loadQuery<Shop>({ query: shopQuery });
 const products = shop?.products ?? [];
+const bundles = shop?.bundles ?? [];
 
 // Separate products by type
 const singleProducts = products.filter((p) => p.productType === 'single');
 const packages = products.filter((p) => p.productType === 'package' || p.productType === 'bundle');
+
+// Sort bundles by slug to match the order: bundle-100, bundle-200, bundle-300
+const sortedBundles = [...bundles].sort((a, b) => a.slug.current.localeCompare(b.slug.current));
+
+// Map bundle slugs to icons
+const bundleIcons = {
+  'bundle-100': bronze,
+  'bundle-200': silver,
+  'bundle-300': gold,
+};
 ---
 
 <Layout title="Shop | Nextaz">
@@ -61,13 +85,15 @@ const packages = products.filter((p) => p.productType === 'package' || p.product
 
   <!-- Products Section -->
   <section id="products" class="bg-white px-6 pb-16 lg:px-30 lg:pb-24">
-    <!-- Single Wine Products Grid - 2 columns on desktop -->
     {
       singleProducts.length > 0 && (
         <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
-          <!-- First cards are positioned over the hero (only one card on mobile) -->
           {singleProducts.map((product, index) => (
-            <div class={index < 2 ? `relative z-elevated lg:-mt-16 ${index === 0 ? '-mt-12' : ''}` : ''}>
+            <div
+              class={
+                index < 2 ? `z-elevated relative lg:-mt-16 ${index === 0 ? '-mt-12' : ''}` : ''
+              }
+            >
               <SingleProductCard product={product} />
             </div>
           ))}
@@ -75,7 +101,6 @@ const packages = products.filter((p) => p.productType === 'package' || p.product
       )
     }
 
-    <!-- Package Products - Full Width -->
     {
       packages.length > 0 && (
         <div class="mt-4 flex flex-col gap-6 lg:gap-8">
@@ -84,6 +109,30 @@ const packages = products.filter((p) => p.productType === 'package' || p.product
               <PackageProductCard product={product} />
             </div>
           ))}
+        </div>
+      )
+    }
+
+    {
+      sortedBundles.length > 0 && (
+        <div class="mt-4 lg:mt-4">
+          <div class="product-card flex flex-col lg:flex-row">
+            {sortedBundles.map((bundle, index) => {
+              const icon = bundleIcons[bundle.slug.current as keyof typeof bundleIcons];
+              const isLast = index === sortedBundles.length - 1;
+              return (
+                <div class="relative flex-1">
+                  <BundleCard bundle={bundle} icon={icon} />
+                  {!isLast && (
+                    <>
+                      <div class="absolute bottom-0 left-[10%] h-px w-[80%] bg-gray-200 lg:hidden" />
+                      <div class="absolute top-[10%] right-0 hidden h-[80%] w-px bg-gray-200 lg:block" />
+                    </>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
       )
     }
