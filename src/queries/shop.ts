@@ -18,6 +18,8 @@ export const shopQuery = groq`
       heroName,
       description,
       price
-    }
+    },
+    customProductPrice,
+    subscriptionPrice
   }
 `;

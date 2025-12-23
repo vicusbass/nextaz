@@ -5,6 +5,9 @@ import heroImage from '../assets/shop/wine-hero.png';
 import bronze from '../assets/shop/bronze.png';
 import silver from '../assets/shop/silver.png';
 import gold from '../assets/shop/gold.png';
+import barrels from '../assets/shop/barrels.png';
+import notes from '../assets/shop/notes.png';
+import triangle from '../assets/shop/silver.png';
 import { loadQuery } from '../utils/loadQuery';
 import { shopQuery } from '../queries/shop';
 import SingleProductCard from '../components/SingleProductCard.astro';
@@ -33,11 +36,15 @@ interface Shop {
   title: string;
   products: Product[];
   bundles: Bundle[];
+  customProductPrice: number;
+  subscriptionPrice: number;
 }
 
 const { data: shop } = await loadQuery<Shop>({ query: shopQuery });
 const products = shop?.products ?? [];
 const bundles = shop?.bundles ?? [];
+const customProductPrice = shop?.customProductPrice ?? 0;
+const subscriptionPrice = shop?.subscriptionPrice ?? 0;
 
 // Separate products by type
 const singleProducts = products.filter((p) => p.productType === 'single');
@@ -113,28 +120,107 @@ const bundleIcons = {
       )
     }
 
+    {/* Bundle Products - Separate cards on mobile, single row with dividers on desktop */}
     {
       sortedBundles.length > 0 && (
-        <div class="mt-4 lg:mt-4">
-          <div class="product-card flex flex-col lg:flex-row">
-            {sortedBundles.map((bundle, index) => {
+        <>
+          {/* Mobile: Separate cards with gap */}
+          <div class="mt-4 flex flex-col gap-4 lg:hidden">
+            {sortedBundles.map((bundle) => {
               const icon = bundleIcons[bundle.slug.current as keyof typeof bundleIcons];
-              const isLast = index === sortedBundles.length - 1;
               return (
-                <div class="relative flex-1">
+                <div class="product-card">
                   <BundleCard bundle={bundle} icon={icon} />
-                  {!isLast && (
-                    <>
-                      <div class="absolute bottom-0 left-[10%] h-px w-[80%] bg-gray-200 lg:hidden" />
-                      <div class="absolute top-[10%] right-0 hidden h-[80%] w-px bg-gray-200 lg:block" />
-                    </>
-                  )}
                 </div>
               );
             })}
           </div>
-        </div>
+
+          {/* Desktop: Single card with dividers */}
+          <div class="mt-4 hidden lg:block">
+            <div class="product-card flex flex-row">
+              {sortedBundles.map((bundle, index) => {
+                const icon = bundleIcons[bundle.slug.current as keyof typeof bundleIcons];
+                const isLast = index === sortedBundles.length - 1;
+                return (
+                  <div class="relative flex-1">
+                    <BundleCard bundle={bundle} icon={icon} />
+                    {!isLast && <div class="absolute top-[10%] right-0 h-[80%] w-px bg-gray-200" />}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </>
       )
     }
+
+    {/* Special Products - Custom Bundle & Subscription */}
+    <div class="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
+      {/* Custom Bundle Card */}
+      <article class="product-card flex-col lg:py-12">
+        <div class="flex h-[280px] w-full items-end justify-center overflow-hidden pb-4 lg:h-[320px]">
+          <div class="relative flex items-end">
+            <Image
+              src={triangle}
+              alt=""
+              class="h-[160px] w-auto object-contain lg:h-[200px]"
+              aria-hidden="true"
+            />
+            <Image
+              src={barrels}
+              alt="Bundle personalizat"
+              class="-ml-10 h-[200px] w-auto object-contain lg:-ml-12 lg:h-[260px]"
+            />
+          </div>
+        </div>
+        <div class="flex flex-col items-center gap-4 p-6 text-center lg:gap-6 lg:px-8 lg:pt-8">
+          <h3 class="text-xl font-bold text-black">Bundle personalizat</h3>
+          <p class="text-gray text-base max-w-[300px] min-h-13 leading-relaxed">
+            Ai nevoie de o cantitate personalizată sau o selecție specială? Te ajutăm.
+          </p>
+          <p class="text-lg font-bold text-black">
+            40,00 lei
+          </p>
+          <a href="/contact" class="btn-add-to-cart">Contactează-ne</a>
+        </div>
+      </article>
+
+      {/* Subscription Card */}
+      <article class="product-card flex-col lg:py-12">
+        <div class="flex h-[280px] w-full items-end justify-center overflow-hidden pb-4 lg:h-[320px]">
+          <div class="relative flex items-end">
+            <Image
+              src={triangle}
+              alt=""
+              class="h-[160px] w-auto object-contain lg:h-[200px]"
+              aria-hidden="true"
+            />
+            <Image
+              src={notes}
+              alt="Abonament lunar"
+              class="-ml-14 h-[200px] w-auto object-contain lg:-ml-20 lg:h-[260px]"
+            />
+          </div>
+        </div>
+        <div class="flex flex-col items-center gap-4 p-6 text-center lg:gap-6 lg:px-8 lg:pt-8">
+          <h3 class="text-xl font-bold text-black">Abonament lunar</h3>
+          <p class="text-gray text-base min-h-13 leading-relaxed">
+            Primești vinurile preferate în fiecare lună
+          </p>
+          <p class="text-lg font-bold text-black">
+            40,00 lei
+          </p>
+          <button
+            class="btn-add-to-cart"
+            data-product-id="subscription"
+            data-product-name="Abonament lunar"
+            data-product-price={subscriptionPrice}
+          >
+            Adaugă în coș
+          </button>
+        </div>
+      </article>
+    </div>
   </section>
 </Layout>
