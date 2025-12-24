@@ -1,0 +1,67 @@
+---
+interface Bundle {
+  name: string;
+  slug: { current: string };
+  heroName: string;
+  description: string;
+  price: number;
+}
+
+interface Props {
+  bundle: Bundle;
+  icon: ImageMetadata;
+}
+
+const { bundle, icon } = Astro.props;
+const { name, description, price, slug } = bundle;
+
+import { Image } from 'astro:assets';
+import rectangle from '../assets/shop/rectangle.svg';
+---
+
+<div class="flex flex-col py-12 lg:py-20" data-bundle-slug={slug.current}>
+  <div
+    class="flex h-[140px] w-full shrink-0 items-center justify-center gap-1 bg-transparent px-4 lg:h-[200px] lg:gap-2"
+  >
+    <div class="flex h-[70px] items-center lg:h-[100px]">
+      <Image src={icon} alt="" class="h-full w-auto object-contain" aria-hidden="true" />
+      <Image
+        src={rectangle}
+        alt=""
+        class="-ml-px h-full w-auto object-contain"
+        aria-hidden="true"
+      />
+    </div>
+    <p class="text-6xl font-bold text-black lg:text-8xl">
+      {name.match(/\d+/)?.[0] || ''}
+    </p>
+  </div>
+
+  <div
+    class="flex flex-1 flex-col items-center justify-center gap-4 bg-white px-4 pt-8 text-center lg:gap-6 lg:px-6 lg:pt-12"
+  >
+    <div class="flex flex-col gap-2">
+      <h3 class="text-lg leading-tight font-bold text-black lg:text-xl">
+        {name}
+      </h3>
+
+      {description && <p class="text-gray text-sm leading-relaxed lg:text-base">{description}</p>}
+    </div>
+
+    <div class="flex flex-col items-center gap-4">
+      <p class="text-base font-bold text-black lg:text-lg">
+        {price.toFixed(2).replace('.', ',')} lei
+      </p>
+
+      <button
+        class="btn-add-to-cart"
+        data-bundle-slug={slug.current}
+        data-bundle-name={name}
+        data-bundle-price={price}
+        aria-label={`Adaugă ${name} în coș`}
+      >
+        Adaugă în coș
+      </button>
+    </div>
+  </div>
+</div>

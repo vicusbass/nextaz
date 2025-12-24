@@ -11,6 +11,15 @@ export const shopQuery = groq`
       image,
       description,
       price
-    }
+    },
+    bundles[]{
+      name,
+      slug,
+      heroName,
+      description,
+      price
+    },
+    customProductPrice,
+    subscriptionPrice
   }
 `;

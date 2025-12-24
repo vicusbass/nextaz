@@ -31,7 +31,6 @@ export const product = defineType({
         list: [
           {title: 'Single', value: 'single'},
           {title: 'Package', value: 'package'},
-          {title: 'Bundle', value: 'bundle'},
         ],
         layout: 'radio',
       },
@@ -58,11 +57,7 @@ export const product = defineType({
       title: 'Pret',
       type: 'number',
       description: 'Price in LEI (e.g. 40.00)',
-      validation: (rule) =>
-        rule
-          .required()
-          .positive()
-          .precision(2),
+      validation: (rule) => rule.required().positive().precision(2),
     }),
   ],
   preview: {

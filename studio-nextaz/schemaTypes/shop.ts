@@ -25,6 +25,82 @@ export const shop = defineType({
         }),
       ],
     }),
+    defineField({
+      name: 'bundles',
+      title: 'Pachete (Bundles)',
+      type: 'array',
+      validation: (rule) => rule.max(3),
+      of: [
+        defineArrayMember({
+          type: 'object',
+          fields: [
+            defineField({
+              name: 'name',
+              title: 'Nume',
+              type: 'string',
+              validation: (rule) => rule.required(),
+            }),
+            defineField({
+              name: 'slug',
+              title: 'Slug',
+              type: 'slug',
+              options: {
+                source: 'name',
+                maxLength: 96,
+              },
+              validation: (rule) => rule.required(),
+            }),
+            defineField({
+              name: 'heroName',
+              title: 'Nume Hero',
+              type: 'string',
+              description: 'Numele care apare in sectiunea hero',
+              validation: (rule) => rule.required(),
+            }),
+            defineField({
+              name: 'description',
+              title: 'Descriere',
+              type: 'text',
+              rows: 4,
+              validation: (rule) => rule.required(),
+            }),
+            defineField({
+              name: 'price',
+              title: 'Pret',
+              type: 'number',
+              description: 'Pret in LEI',
+              validation: (rule) => rule.required().positive().precision(2),
+            }),
+          ],
+          preview: {
+            select: {
+              title: 'name',
+              price: 'price',
+            },
+            prepare({title, price}) {
+              return {
+                title,
+                subtitle: `${price?.toFixed(2) || '0.00'} LEI`,
+              }
+            },
+          },
+        }),
+      ],
+    }),
+    defineField({
+      name: 'customProductPrice',
+      title: 'Pret produs personalizat',
+      type: 'number',
+      description: 'Pret in LEI pentru optiunea de produs personalizat',
+      validation: (rule) => rule.required().positive().precision(2),
+    }),
+    defineField({
+      name: 'subscriptionPrice',
+      title: 'Pret abonament',
+      type: 'number',
+      description: 'Pret in LEI pentru optiunea de abonament',
+      validation: (rule) => rule.required().positive().precision(2),
+    }),
   ],
   preview: {
     select: {
