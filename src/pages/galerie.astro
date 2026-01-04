@@ -53,7 +53,7 @@ const { desktop, mobile } = layoutGalleryImages(categorized);
 
   <!-- Gallery Grid -->
   <section class="container mx-auto px-4 pb-8 lg:px-30 lg:pb-16">
-    <!-- Desktop Layout -->
+    <!-- Desktop -->
     <div class="hidden gap-4 lg:grid lg:grid-cols-2">
       {
         desktop.map((item, index) => {
@@ -66,9 +66,11 @@ const { desktop, mobile } = layoutGalleryImages(categorized);
             <div
               class={`${item.isRectangle ? 'col-span-2' : 'col-span-1'} ${isFirstRow ? 'z-elevated relative lg:-mt-16' : ''}`}
             >
-              <img
+              <Image
                 src={item.image.asset.url}
                 alt={item.image.alt}
+                width={item.image.asset.metadata.dimensions.width}
+                height={item.image.asset.metadata.dimensions.height}
                 class={
                   item.isRectangle
                     ? 'h-auto w-full object-cover'
@@ -88,9 +90,11 @@ const { desktop, mobile } = layoutGalleryImages(categorized);
       {
         mobile.map((item, index) => (
           <div class={index === 0 ? 'z-elevated relative -mt-12' : ''}>
-            <img
+            <Image
               src={item.image.asset.url}
               alt={item.image.alt}
+              width={item.image.asset.metadata.dimensions.width}
+              height={item.image.asset.metadata.dimensions.height}
               class="aspect-square w-full object-cover"
               loading="lazy"
               decoding="async"
