@@ -1,0 +1,24 @@
+order: 40
+id: spumant
+image: bottle-spumant-demisec.png
+title: Nextaz Spumant
+description: Un spumant vibrant, cu note de măr verde și citrice, potrivit pentru orice moment spontan.
+flavours:
+  - Măr verde
+  - Citrice
+  - Pâine prăjită
+  - Flori albe
+  - Miere
+organoleptic:
+  - Spumant demisec, elegant și persistent
+  - Culoare galben-pai cu reflexe verzi
+  - Perlaj fin și persistent
+  - Aciditate vie, echilibrată
+  - "Durată de viață: 2-3 ani"
+  - Perfect pentru celebrări și aperitive
+  - "Temperatura de servire: 6-8°C"
+culinary:
+  - "Aperitive: caviar, somon afumat, oysters"
+  - "Preparate: fructe de mare, sushi"
+  - "Salate: salate sofisticate cu dressing ușor"
+  - "Deserturi: fructe proaspete, prăjituri ușoare"
