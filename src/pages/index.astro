@@ -8,6 +8,8 @@ import glass from '../assets/glass.svg';
 import leaf from '../assets/leaf.svg';
 import hexagon from '../assets/hexagon.svg';
 import lemonFlavour from '../assets/lemon-flavour.svg';
+import close from '../assets/close.svg';
+import arrowUp from '../assets/arrow-up.svg';
 import flower from '../assets/flower.svg';
 import culinarySign from '../assets/culinary-sign.svg';
 import { MuxPlayer } from '@mux/mux-player-astro';
@@ -108,22 +110,22 @@ import bottleSpumant from '../assets/bottle-spumant-demisec.png';
             title: 'Nextaz Alb',
             description:
               'Un vin alb răcoritor, cu note fructate și citrice, perfect pentru mese lejere sau ieșiri de weekend.',
-            flavours: ['Lămâie', 'Grapefruit', 'Mere verzi', 'Flori albe', 'Mentă'],
+            flavours: ['Citrice (lămâie)','Piersici albe', 'Agrișe', 'Fân proaspăt cosit'],
             organoleptic: [
-              'Vin alb demisec, fresh și echilibrat',
-              'Culoare galben-pai strălucitoare',
-              'Textură ușoară, revigorantă',
-              'Aciditate vie, plăcută',
-              'Durată de viață: 2-4 ani',
-              'Perfect pentru vară și ocazii relaxante',
+              'Vin alb demisec, luminos și răcoritor',
+              'Culoare galben-verzuie, strălucitoare',
+              'Note reținute în nas, cu ușoare urme de baricare',
+              'Textură catifelată, postgust ușor amărui',
+              'Durată de viață: aproximativ 3 ani',
+              'După deschidere: până la 1 săptămână la frigider',
+              'Nivel ridicat de sulfiți - se recomandă aerisirea câteva minute înainte de servire',
               'Temperatura de servire: 8-10°C',
             ],
             culinary: [
-              'Aperitive: salate proaspete, brânzeturi fresh',
-              'Preparate principale: pește alb, fructe de mare',
-              'Paste cu sos alb sau legume',
-              'Salate: Caesar, salate verzi cu dressing ușor',
-              'Deserturi: tarte cu lămâie, sorbet',
+              'Aperitive și gustări de vară: brânză de capră, somon afumat, salată de icre, sparanghel, salate de sezon, humus, guacamole',
+              'Preparate principale: pui teriyaki, cordon bleu, porc la cuptor, pește la grătar sau la cuptor, creveți sote, paste cu fructe de mare, risotto cu ciuperci sau sparanghel',
+              'Bucătării internaționale: Thai curry, Pad Thai, curry indian',
+              'Deserturi: plăcintă cu mere, tartă cu pere, salată de fructe de sezon',
             ],
           },
           {
@@ -132,22 +134,23 @@ import bottleSpumant from '../assets/bottle-spumant-demisec.png';
             title: 'Nextaz Roșu',
             description:
               'Fetească Neagră matură, catifelată, cu note de ciocolată neagră și prune uscate.',
-            flavours: ['Ciocolată neagră', 'Prune uscate', 'Vișine', 'Condimente', 'Vanilie'],
+            flavours: ['Coacăze', 'Prune uscate', 'Tutun', 'Marțipan', 'Ciocolată neagră', 'Vanilină'],
             organoleptic: [
-              'Vin roșu sec, corpulent și elegant',
-              'Culoare roșu-rubinu intens',
-              'Textură catifelată, tanine moi',
-              'Aciditate echilibrată',
-              'Durată de viață: 5-8 ani',
-              'Perfect pentru carne roșie și preparate intense',
-              'Temperatura de servire: 16-18°C',
+              'Fetească Neagră sec, maturată la baric',
+              'Culoare roșu purpuriu, cu reflexii cărămizii',
+              'Taninuri catifelate, astringență medie',
+              'Corpolență medie spre mare, bogată în extract sec',
+              'Durată de viață: 7-10 ani',
+              'După deschidere: până la 2 săptămâni la frigider',
+              'Temperatura de servire: 16°C',
+              'Nu necesită decantare, dar poate fi aerată ușor înainte de servire'
             ],
             culinary: [
-              'Aperitive: brânzeturi mature, salamuri',
-              'Preparate principale: friptură, miel, vânat',
-              'Paste cu sos de roșii, ragu',
-              'Legume la grătar, ciuperci',
-              'Deserturi: ciocolată neagră',
+              'Aperitive: brânzeturi mature, salamuri - TODO',
+              'Preparate principale: friptură, miel, vânat - TODO',
+              'Paste cu sos de roșii, ragu - TODO',
+              'Legume la grătar, ciuperci - TODO',
+              'Deserturi: ciocolată neagră - TODO',
             ],
           },
           {
@@ -176,7 +179,7 @@ import bottleSpumant from '../assets/bottle-spumant-demisec.png';
         ].map(({ id, image, title, description, flavours, organoleptic, culinary }) => (
           <div
             data-wine-id={id}
-            class="wine-cell group bg-gray-light hover:bg-gray-lighter aria-expanded:hover:bg-gray-light flex aspect-auto w-full cursor-pointer overflow-hidden border border-white transition-all duration-500 lg:aspect-square lg:w-1/2"
+            class="wine-cell group bg-gray-light hover:bg-gray-lighter aria-expanded:hover:bg-gray-light hidden aspect-auto w-full cursor-pointer overflow-hidden border border-white transition-all duration-500 lg:flex lg:aspect-square lg:w-1/2"
             aria-expanded="false"
           >
             <div class="flex h-full w-full flex-col px-[1.7vw] py-[2.5vw]">
@@ -246,12 +249,117 @@ import bottleSpumant from '../assets/bottle-spumant-demisec.png';
                       <Image
                         src={image}
                         alt="Gallery Sample"
-                        class="h-148 w-88 object-cover"
+                        class="h-[29vw] w-[17vw] object-cover"
                         loading="eager"
                       />
                     ))}
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+          <div
+            data-wine-id={`${id}-mobile`}
+            class="wine-cell-mobile relative group flex w-full cursor-pointer flex-col border border-white bg-gray-light transition-all duration-500 lg:hidden"
+            aria-expanded="false"
+          >
+            <button class="absolute top-0 right-0 flex items-center justify-center opacity-0 transition-all duration-300 group-aria-expanded:opacity-100 w-10 h-10 cursor-pointer">
+              <Image src={close} alt="Close" />
+            </button>
+            <div class="flex flex-col px-8 py-1">
+              <div class="flex flex-col items-center">
+                <Image
+                  src={image}
+                  alt={title}
+                  class="mb-6 h-auto w-70"
+                  loading="eager"
+                />
+                <h3 class="mb-2 text-center text-2xl font-bold">{title}</h3>
+                <p class="mb-4 max-w-[70vw] text-center text-[1rem]">{description}</p>
+                <button class="text-gray my-5 text-base underline opacity-100 scale-100 transition-all duration-300 delay-300 group-aria-expanded:opacity-0 group-aria-expanded:scale-0 group-aria-expanded:delay-0">
+                  Vezi detalii
+                </button>
+              </div>
+
+              {/* Expanded content */}
+              <div class="max-h-0 overflow-hidden opacity-0 transition-all duration-1000 ease-in-out group-aria-expanded:max-h-[3000px] group-aria-expanded:opacity-100">
+                <div class="flex flex-col items-center gap-8">
+                  <a href="/shop" class="btn-add-to-cart text-center text-lg m-auto">
+                    Comandă
+                  </a>
+                  <div>
+                    <h4 class="mb-3 flex flex-col items-center text-[1.375rem] font-bold">
+                      <Image src={lemonFlavour} alt="Profil aromatic" class="h-13 w-13" />
+                      Profil aromatic
+                    </h4>
+                    <ul class="text-gray-dark ml-8 list-disc pl-5 text-sm/loose">
+                      {flavours.map((flavour) => (
+                        <li>{flavour}</li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h4 class="mb-3 flex flex-col items-center text-[1.375rem] font-bold">
+                      <Image src={flower} alt="Caracteristici organoleptice" class="mb-2 h-8 w-8" />
+                      Caracteristici organoleptice
+                    </h4>
+                    <ul class="text-gray-dark ml-8 list-disc pl-5 text-sm/loose">
+                      {organoleptic.map((item) => (
+                        <li>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h4 class="mb-3 flex flex-col items-center text-[1.375rem] font-bold">
+                      <Image src={culinarySign} alt="Recomandări culinare" class="mb-2 h-9 w-9" />
+                      Recomandări culinare
+                    </h4>
+                    <ul class="text-gray-dark ml-8 list-disc pl-5 text-sm/loose">
+                      {culinary.map((item) => (
+                        <li>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div>
+                    <div class="relative">
+                      <div
+                        class="gallery-carousel overflow-hidden"
+                        data-wine-id={`${id}-gallery`}
+                      >
+                        <div class="gallery-track flex transition-transform duration-300 ease-out">
+                          {[gallerySample, gallerySample, gallerySample, gallerySample].map((galleryImage, index) => (
+                            <div class="w-full shrink-0">
+                              <Image
+                                src={galleryImage}
+                                alt={`Gallery ${index + 1}`}
+                                class="mx-auto h-auto w-[80vw] object-cover"
+                                loading="eager"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      <div class="mt-6 flex justify-center gap-2">
+                        {[gallerySample, gallerySample, gallerySample, gallerySample].map((_, index) => (
+                          <button
+                            class={`gallery-dot h-2 w-2 rounded-full transition-all duration-300 ${index === 0 ? 'bg-black' : 'bg-gray'}`}
+                            data-index={index}
+                            aria-label={`Go to image ${index + 1}`}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  <a href="/shop" class="btn-add-to-cart my-4 text-center text-lg mx-auto">
+                      Comandă
+                  </a>
+                </div>
+                <button class="flex items-center justify-centerw-10 h-10 cursor-pointer m-auto">
+                  <Image src={arrowUp} alt="Close" />
+                </button>
               </div>
             </div>
           </div>
@@ -279,8 +387,6 @@ import bottleSpumant from '../assets/bottle-spumant-demisec.png';
 </Layout>
 
 <script>
-  import { set } from 'astro:schema';
-
   function revealModal() {
     const modal = document.getElementById('command-modal');
     if (!modal) return;
@@ -294,6 +400,7 @@ import bottleSpumant from '../assets/bottle-spumant-demisec.png';
     const container = document.querySelector('.wine-cells-container');
     if (!container) return;
 
+    // Desktop cells
     const cells = container.querySelectorAll('.wine-cell');
     let expandedCell: Element | null = null;
 
@@ -347,10 +454,86 @@ import bottleSpumant from '../assets/bottle-spumant-demisec.png';
 
       cell.setAttribute('aria-expanded', 'false');
     }
+
+    // Mobile cells - simpler logic, no hiding other cells
+    const mobileCells = container.querySelectorAll('.wine-cell-mobile');
+
+    mobileCells.forEach((cell) => {
+      cell.addEventListener('click', (e) => {
+        // Don't toggle if clicking on gallery controls
+        if ((e.target as HTMLElement).closest('.gallery-carousel, .gallery-dot')) {
+          return;
+        }
+        const isExpanded = cell.getAttribute('aria-expanded') === 'true';
+        cell.setAttribute('aria-expanded', isExpanded ? 'false' : 'true');
+      });
+    });
+  }
+
+  function initGalleryCarousels() {
+    const carousels = document.querySelectorAll('.gallery-carousel');
+
+    carousels.forEach((carousel) => {
+      const track = carousel.querySelector('.gallery-track') as HTMLElement;
+      const dots = carousel.parentElement?.querySelectorAll('.gallery-dot') as NodeListOf<HTMLElement>;
+      if (!track || !dots) return;
+
+      let currentIndex = 0;
+      const totalImages = dots.length;
+      let touchStartX = 0;
+      let touchEndX = 0;
+
+      function updateCarousel(index: number) {
+        currentIndex = index;
+        track.style.transform = `translateX(-${currentIndex * 100}%)`;
+
+        // Update dots
+        dots.forEach((dot, i) => {
+          if (i === currentIndex) {
+            dot.classList.add('bg-black');
+            dot.classList.remove('bg-gray');
+          } else {
+            dot.classList.remove('bg-black');
+            dot.classList.add('bg-gray');
+          }
+        });
+      }
+
+      // Touch events for swipe
+      carousel.addEventListener('touchstart', (e) => {
+        touchStartX = (e as TouchEvent).touches[0].clientX;
+      });
+
+      carousel.addEventListener('touchend', (e) => {
+        touchEndX = (e as TouchEvent).changedTouches[0].clientX;
+        handleSwipe();
+      });
+
+      function handleSwipe() {
+        const swipeThreshold = 50;
+        const diff = touchStartX - touchEndX;
+
+        if (Math.abs(diff) > swipeThreshold) {
+          if (diff > 0 && currentIndex < totalImages - 1) {
+            updateCarousel(currentIndex + 1);
+          } else if (diff < 0 && currentIndex > 0) {
+            updateCarousel(currentIndex - 1);
+          }
+        }
+      }
+
+      // Dot click events
+      dots.forEach((dot, index) => {
+        dot.addEventListener('click', () => {
+          updateCarousel(index);
+        });
+      });
+    });
   }
 
   document.addEventListener('astro:page-load', () => {
     revealModal();
     initWineCells();
+    initGalleryCarousels();
   });
 </script>
