@@ -1,22 +1,49 @@
 ---
-import Layout from '../layouts/Layout.astro';
 import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import { MuxPlayer } from '@mux/mux-player-astro';
+import Layout from '../layouts/Layout.astro';
 import allWines from '../assets/all-wines.png';
 import allWinesMobile from '../assets/all-wines-mobile.png';
 import gallerySample from '../assets/gallery-sample.png';
-import glass from '../assets/glass.svg';
-import leaf from '../assets/leaf.svg';
-import hexagon from '../assets/hexagon.svg';
-import lemonFlavour from '../assets/lemon-flavour.svg';
-import close from '../assets/close.svg';
 import arrowUp from '../assets/arrow-up.svg';
-import flower from '../assets/flower.svg';
+import close from '../assets/close.svg';
 import culinarySign from '../assets/culinary-sign.svg';
-import { MuxPlayer } from '@mux/mux-player-astro';
-import bottleAlb from '../assets/bottle-alb-demisec.png';
-import bottleRosu from '../assets/bottle-rosu-sec.png';
-import bottleRoze from '../assets/bottle-roze-demisec.png';
-import bottleSpumant from '../assets/bottle-spumant-demisec.png';
+import flower from '../assets/flower.svg';
+import glass from '../assets/glass.svg';
+import hexagon from '../assets/hexagon.svg';
+import leaf from '../assets/leaf.svg';
+import lemonFlavour from '../assets/lemon-flavour.svg';
+
+// Dynamic image imports for wine bottles
+const images = import.meta.glob<{ default: ImageMetadata }>('/src/assets/bottle-*.png', { eager: true });
+
+// Wine type with resolved image
+type Wine = {
+  order: number;
+  id: string;
+  image: ImageMetadata;
+  title: string;
+  description: string;
+  flavours: string[];
+  organoleptic: string[];
+  culinary: string[];
+};
+
+const wineEntries = await getCollection('wines');
+const wines: Wine[] = wineEntries
+  .sort((a, b) => a.data.order - b.data.order)
+  .map((entry) => {
+    const imagePath = `/src/assets/${entry.data.image}`;
+    const imageModule = images[imagePath];
+    if (!imageModule) {
+      throw new Error(`Image not found: ${imagePath}`);
+    }
+    return {
+      ...entry.data,
+      image: imageModule.default,
+    };
+  });
 ---
 
 <Layout title="Nextaz">
@@ -80,104 +107,7 @@ import bottleSpumant from '../assets/bottle-spumant-demisec.png';
     <h2 class="mb-30 text-[3.25rem] font-bold">Gama Nextaz</h2>
     <div class="wine-cells-container relative flex w-full flex-row flex-wrap">
       {
-        [
-          {
-            id: 'roze',
-            image: bottleRoze,
-            title: 'Nextaz Rosé',
-            description:
-              'Aromă delicată de trandafir și fructe roșii, un rosé elegant, iubit pentru prospețime și culoare.',
-            flavours: ['Trandafir', 'Busuioc', 'Cireșe', 'Căpșuni', 'Grapefruit', 'Măr glazurat'],
-            organoleptic: [
-              'Busuioacă de Bohotin demisec, intens aromatică',
-              'Culoare rosé somon / cireașă, strălucitoare',
-              'Textură delicată, fină, crocantă',
-              'Aciditate ridicată, bine integrată',
-              'Durată de viață: 3-5 ani',
-              'După deschidere: până la 1 săptămână la frigider',
-              'Temperatura de servire: 8-10°C',
-            ],
-            culinary: [
-              'Aperitive: bruschete cu roșii și busuioc, spring rolls, jamón, chorizo ',
-              'Preparate principale: mâncăruri asiatice condimentate sau picante, fructe de mare, paella, piept de rață cu sos de smochine, aripioare de pui picante ',
-              'Carne & pește: porc cu sosuri dulci sau caramelizate, păstrăv, crap ',
-              'Legume & garnituri: cartof dulce, dovleac copt cu scorțișoară, alte legume cu dulceață naturală ',
-              'Alături de gustări reci: platouri cu fructe de vară, măsline marinate și salate fresh cu dressing ușor.',
-            ],
-          },
-          {
-            id: 'alb',
-            image: bottleAlb,
-            title: 'Nextaz Alb',
-            description:
-              'Un vin alb răcoritor, cu note fructate și citrice, perfect pentru mese lejere sau ieșiri de weekend.',
-            flavours: ['Citrice (lămâie)','Piersici albe', 'Agrișe', 'Fân proaspăt cosit'],
-            organoleptic: [
-              'Vin alb demisec, luminos și răcoritor',
-              'Culoare galben-verzuie, strălucitoare',
-              'Note reținute în nas, cu ușoare urme de baricare',
-              'Textură catifelată, postgust ușor amărui',
-              'Durată de viață: aproximativ 3 ani',
-              'După deschidere: până la 1 săptămână la frigider',
-              'Nivel ridicat de sulfiți - se recomandă aerisirea câteva minute înainte de servire',
-              'Temperatura de servire: 8-10°C',
-            ],
-            culinary: [
-              'Aperitive și gustări de vară: brânză de capră, somon afumat, salată de icre, sparanghel, salate de sezon, humus, guacamole',
-              'Preparate principale: pui teriyaki, cordon bleu, porc la cuptor, pește la grătar sau la cuptor, creveți sote, paste cu fructe de mare, risotto cu ciuperci sau sparanghel',
-              'Bucătării internaționale: Thai curry, Pad Thai, curry indian',
-              'Deserturi: plăcintă cu mere, tartă cu pere, salată de fructe de sezon',
-            ],
-          },
-          {
-            id: 'rosu',
-            image: bottleRosu,
-            title: 'Nextaz Roșu',
-            description:
-              'Fetească Neagră matură, catifelată, cu note de ciocolată neagră și prune uscate.',
-            flavours: ['Coacăze', 'Prune uscate', 'Tutun', 'Marțipan', 'Ciocolată neagră', 'Vanilină'],
-            organoleptic: [
-              'Fetească Neagră sec, maturată la baric',
-              'Culoare roșu purpuriu, cu reflexii cărămizii',
-              'Taninuri catifelate, astringență medie',
-              'Corpolență medie spre mare, bogată în extract sec',
-              'Durată de viață: 7-10 ani',
-              'După deschidere: până la 2 săptămâni la frigider',
-              'Temperatura de servire: 16°C',
-              'Nu necesită decantare, dar poate fi aerată ușor înainte de servire'
-            ],
-            culinary: [
-              'Aperitive: brânzeturi mature, salamuri - TODO',
-              'Preparate principale: friptură, miel, vânat - TODO',
-              'Paste cu sos de roșii, ragu - TODO',
-              'Legume la grătar, ciuperci - TODO',
-              'Deserturi: ciocolată neagră - TODO',
-            ],
-          },
-          {
-            id: 'spumant',
-            image: bottleSpumant,
-            title: 'Nextaz Spumant',
-            description:
-              'Un spumant vibrant, cu note de măr verde și citrice, potrivit pentru orice moment spontan.',
-            flavours: ['Măr verde', 'Citrice', 'Pâine prăjită', 'Flori albe', 'Miere'],
-            organoleptic: [
-              'Spumant demisec, elegant și persistent',
-              'Culoare galben-pai cu reflexe verzi',
-              'Perlaj fin și persistent',
-              'Aciditate vie, echilibrată',
-              'Durată de viață: 2-3 ani',
-              'Perfect pentru celebrări și aperitive',
-              'Temperatura de servire: 6-8°C',
-            ],
-            culinary: [
-              'Aperitive: caviar, somon afumat, oysters',
-              'Preparate: fructe de mare, sushi',
-              'Salate: salate sofisticate cu dressing ușor',
-              'Deserturi: fructe proaspete, prăjituri ușoare',
-            ],
-          },
-        ].map(({ id, image, title, description, flavours, organoleptic, culinary }) => (
+        wines.map(({ id, image, title, description, flavours, organoleptic, culinary }) => (
           <div
             data-wine-id={id}
             class="wine-cell group bg-gray-light hover:bg-gray-lighter aria-expanded:hover:bg-gray-light hidden aspect-auto w-full cursor-pointer overflow-hidden border border-white transition-all duration-500 lg:flex lg:aspect-square lg:w-1/2"

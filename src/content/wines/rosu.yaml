@@ -1,0 +1,27 @@
+order: 30
+id: rosu
+image: bottle-rosu-sec.png
+title: Nextaz Roșu
+description: Fetească Neagră matură, catifelată, cu note de ciocolată neagră și prune uscate.
+flavours:
+  - Coacăze
+  - Prune uscate
+  - Tutun
+  - Marțipan
+  - Ciocolată neagră
+  - Vanilină
+organoleptic:
+  - Fetească Neagră sec, maturată la baric
+  - Culoare roșu purpuriu, cu reflexii cărămizii
+  - Taninuri catifelate, astringență medie
+  - Corpolență medie spre mare, bogată în extract sec
+  - "Durată de viață: 7-10 ani"
+  - "După deschidere: până la 2 săptămâni la frigider"
+  - "Temperatura de servire: 16°C"
+  - Nu necesită decantare, dar poate fi aerată ușor înainte de servire
+culinary:
+  - "Aperitive: brânzeturi mature, salamuri - TODO"
+  - "Preparate principale: friptură, miel, vânat - TODO"
+  - "Paste cu sos de roșii, ragu - TODO"
+  - "Legume la grătar, ciuperci - TODO"
+  - "Deserturi: ciocolată neagră - TODO"
