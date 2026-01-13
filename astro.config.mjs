@@ -6,9 +6,12 @@ import tailwindcss from '@tailwindcss/vite';
 import sanity from '@sanity/astro';
 import react from '@astrojs/react';
 
+import vercel from '@astrojs/vercel';
+
 // https://astro.build/config
 export default defineConfig({
   site: 'https://nextaz.vercel.app',
+
   vite: {
     plugins: [tailwindcss()],
     
@@ -18,5 +21,7 @@ export default defineConfig({
     projectId: 'vrxix2id',
     dataset: 'production',
     useCdn: false
-  }), react()]
+  }), react()],
+
+  adapter: vercel()
 });

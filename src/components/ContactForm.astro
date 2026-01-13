@@ -2,7 +2,12 @@
 
 ---
 
-<form id="contact-form" class="flex w-full flex-col gap-6 px-8 py-12 lg:max-w-4xl lg:px-0">
+<form
+  id="contact-form"
+  action="/api/contact"
+  method="POST"
+  class="flex w-full flex-col gap-6 px-8 py-12 lg:max-w-4xl lg:px-0"
+>
   <input
     type="text"
     name="name"
@@ -48,32 +53,6 @@
     type="submit"
     class="hover:bg-gray-dark w-full bg-black py-6 text-lg font-medium text-white transition-all lg:text-xl"
   >
-    Comandă
+    Trimite mesaj
   </button>
 </form>
-
-<script>
-  function initContactForm() {
-    const form = document.getElementById('contact-form') as HTMLFormElement;
-    if (!form) return;
-
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-
-      const formData = new FormData(form);
-      const data = {
-        name: formData.get('name'),
-        email: formData.get('email'),
-        phone: formData.get('phone'),
-        subject: formData.get('subject'),
-        message: formData.get('message'),
-      };
-
-      console.log('Contact Form Data:', data);
-    });
-  }
-
-  document.addEventListener('astro:page-load', () => {
-    initContactForm();
-  });
-</script>
