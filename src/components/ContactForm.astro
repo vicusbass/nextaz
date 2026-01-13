@@ -1,0 +1,79 @@
+---
+
+---
+
+<form id="contact-form" class="flex w-full flex-col gap-6 px-8 py-12 lg:max-w-4xl lg:px-0">
+  <input
+    type="text"
+    name="name"
+    placeholder="Nume & Prenume"
+    required
+    class="text-gray-dark placeholder:text-gray focus:border-gray w-full border border-gray-400 bg-transparent px-6 py-4 text-lg focus:outline-none"
+  />
+
+  <input
+    type="email"
+    name="email"
+    placeholder="Email"
+    required
+    class="text-gray-dark placeholder:text-gray focus:border-gray w-full border border-gray-400 bg-transparent px-6 py-4 text-lg focus:outline-none"
+  />
+
+  <input
+    type="tel"
+    name="phone"
+    placeholder="Nr. de telefon"
+    required
+    pattern="[0-9]+"
+    class="text-gray-dark placeholder:text-gray focus:border-gray w-full border border-gray-400 bg-transparent px-6 py-4 text-lg focus:outline-none"
+  />
+
+  <input
+    type="text"
+    name="subject"
+    placeholder="Subiect"
+    required
+    class="text-gray-dark placeholder:text-gray focus:border-gray w-full border border-gray-400 bg-transparent px-6 py-4 text-lg focus:outline-none"
+  />
+
+  <textarea
+    name="message"
+    placeholder="Mesajul tău"
+    required
+    rows="8"
+    class="text-gray-dark placeholder:text-gray focus:border-gray w-full resize-none border border-gray-400 bg-transparent px-6 py-4 text-lg focus:outline-none"
+  ></textarea>
+
+  <button
+    type="submit"
+    class="hover:bg-gray-dark w-full bg-black py-6 text-lg font-medium text-white transition-all lg:text-xl"
+  >
+    Comandă
+  </button>
+</form>
+
+<script>
+  function initContactForm() {
+    const form = document.getElementById('contact-form') as HTMLFormElement;
+    if (!form) return;
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      const data = {
+        name: formData.get('name'),
+        email: formData.get('email'),
+        phone: formData.get('phone'),
+        subject: formData.get('subject'),
+        message: formData.get('message'),
+      };
+
+      console.log('Contact Form Data:', data);
+    });
+  }
+
+  document.addEventListener('astro:page-load', () => {
+    initContactForm();
+  });
+</script>
