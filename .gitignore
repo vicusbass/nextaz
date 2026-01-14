@@ -141,5 +141,6 @@ vite.config.ts.timestamp-*
 CLAUDE.md
 
 .astro
+.vercel
 
 **/.DS_Store
