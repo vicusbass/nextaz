@@ -7,6 +7,7 @@ import type { GalleryImage } from '../utils/gallery';
 import heroDesktop from '../assets/gallery/hero.png';
 import heroMobile from '../assets/gallery/hero-mobile.jpg';
 import { Image } from 'astro:assets';
+import ContactForm from '../components/ContactForm.astro';
 
 const { data } = await loadQuery<{ images: GalleryImage[] }>({
   query: galleryQuery,
@@ -104,4 +105,5 @@ const { desktop, mobile } = layoutGalleryImages(categorized);
       }
     </div>
   </section>
+  <ContactForm />
 </Layout>

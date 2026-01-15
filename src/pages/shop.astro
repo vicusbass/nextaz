@@ -13,6 +13,7 @@ import { shopQuery } from '../queries/shop';
 import SingleProductCard from '../components/SingleProductCard.astro';
 import PackageProductCard from '../components/PackageProductCard.astro';
 import BundleCard from '../components/BundleCard.astro';
+import ContactForm from '../components/ContactForm.astro';
 
 interface Product {
   _id: string;
@@ -157,7 +158,9 @@ const bundleIcons = {
     <div class="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
       {/* Custom Bundle Card */}
       <article class="product-card flex-col lg:py-12">
-        <div class="flex h-[220px] w-full items-end justify-center overflow-hidden pb-4 lg:h-[260px]">
+        <div
+          class="flex h-[220px] w-full items-end justify-center overflow-hidden pb-4 lg:h-[260px]"
+        >
           <div class="relative flex items-end">
             <Image
               src={triangle}
@@ -174,19 +177,19 @@ const bundleIcons = {
         </div>
         <div class="flex flex-col items-center gap-4 p-6 text-center lg:gap-6 lg:px-8 lg:pt-8">
           <h3 class="text-xl font-bold text-black">Bundle personalizat</h3>
-          <p class="text-gray text-base max-w-[300px] min-h-13 leading-relaxed">
+          <p class="text-gray min-h-13 max-w-[300px] text-base leading-relaxed">
             Ai nevoie de o cantitate personalizată sau o selecție specială? Te ajutăm.
           </p>
-          <p class="text-lg font-bold text-black">
-            40,00 lei
-          </p>
+          <p class="text-lg font-bold text-black">40,00 lei</p>
           <a href="/contact" class="btn-add-to-cart">Contactează-ne</a>
         </div>
       </article>
 
       {/* Subscription Card */}
       <article class="product-card flex-col lg:py-12">
-        <div class="flex h-[220px] w-full items-end justify-center overflow-hidden pb-4 lg:h-[260px]">
+        <div
+          class="flex h-[220px] w-full items-end justify-center overflow-hidden pb-4 lg:h-[260px]"
+        >
           <div class="relative flex items-end">
             <Image
               src={triangle}
@@ -203,12 +206,10 @@ const bundleIcons = {
         </div>
         <div class="flex flex-col items-center gap-4 p-6 text-center lg:gap-6 lg:px-8 lg:pt-8">
           <h3 class="text-xl font-bold text-black">Abonament lunar</h3>
-          <p class="text-gray text-base min-h-13 leading-relaxed">
+          <p class="text-gray min-h-13 text-base leading-relaxed">
             Primești vinurile preferate în fiecare lună
           </p>
-          <p class="text-lg font-bold text-black">
-            40,00 lei
-          </p>
+          <p class="text-lg font-bold text-black">40,00 lei</p>
           <button
             class="btn-add-to-cart"
             data-product-id="subscription"
@@ -221,4 +222,5 @@ const bundleIcons = {
       </article>
     </div>
   </section>
+  <ContactForm />
 </Layout>
