@@ -738,6 +738,167 @@
     background: #f8f8f8;
   }
 
+  /* Bundle Cart Item styles */
+  .bundle-cart-item {
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem 0;
+    border-bottom: 1px solid #f2f2f2;
+  }
+
+  .bundle-cart-item:last-child {
+    border-bottom: none;
+  }
+
+  .bundle-cart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+  }
+
+  .bundle-cart-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .bundle-cart-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #000;
+    margin: 0;
+  }
+
+  .bundle-cart-bottles {
+    font-size: 0.75rem;
+    color: #909090;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .bundle-cart-remove {
+    width: 2rem;
+    height: 2rem;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #909090;
+    transition: color 0.2s;
+  }
+
+  .bundle-cart-remove:hover {
+    color: #dc2626;
+  }
+
+  .bundle-cart-remove svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .bundle-cart-wines {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background: #f8f8f8;
+    margin-bottom: 1rem;
+  }
+
+  .bundle-cart-wine {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .bundle-cart-wine-info {
+    display: flex;
+    gap: 0.5rem;
+    align-items: baseline;
+  }
+
+  .bundle-cart-wine-name {
+    font-size: 0.875rem;
+    color: #000;
+  }
+
+  .bundle-cart-wine-qty {
+    font-size: 0.75rem;
+    color: #909090;
+  }
+
+  .bundle-cart-wine-pricing {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.125rem;
+  }
+
+  .bundle-cart-wine-price {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #000;
+  }
+
+  .bundle-cart-wine-sgr {
+    font-size: 0.6875rem;
+    color: #909090;
+  }
+
+  .bundle-cart-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .bundle-cart-totals {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .bundle-cart-subtotal,
+  .bundle-cart-sgr {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: #6e6e6e;
+  }
+
+  .bundle-cart-total {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #000;
+    padding-top: 0.5rem;
+    border-top: 1px solid #e5e5e5;
+    margin-top: 0.25rem;
+  }
+
+  .bundle-cart-edit {
+    align-self: flex-start;
+    padding: 0.5rem 1rem;
+    background: transparent;
+    border: 1px solid #e5e5e5;
+    color: #6e6e6e;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .bundle-cart-edit:hover {
+    background: #f2f2f2;
+    color: #000;
+    border-color: #000;
+  }
+
   @media (min-width: 1024px) {
     .cart-summary {
       padding: 2rem;
@@ -844,6 +1005,31 @@
 
     .bundle-wine-line-total {
       font-size: 1rem;
+    }
+
+    /* Bundle Cart Item responsive styles */
+    .bundle-cart-item {
+      padding: 2rem 0;
+    }
+
+    .bundle-cart-name {
+      font-size: 1.125rem;
+    }
+
+    .bundle-cart-wines {
+      padding: 1rem;
+    }
+
+    .bundle-cart-wine-name {
+      font-size: 1rem;
+    }
+
+    .bundle-cart-wine-price {
+      font-size: 1rem;
+    }
+
+    .bundle-cart-total {
+      font-size: 1.125rem;
     }
   }
 }
