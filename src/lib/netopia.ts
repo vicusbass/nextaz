@@ -29,18 +29,6 @@ export function getNetopiaConfig(): NetopiaConfig {
   const isSandbox = sandboxEnv === true || sandboxEnv === 'true';
   const isLive = !isSandbox;
 
-  console.log('Netopia config check:', {
-    hasApiKey: !!apiKey,
-    apiKeyLength: apiKey?.length,
-    apiKeyStart: apiKey?.substring(0, 10),
-    hasPosSignature: !!posSignature,
-    posSignature: posSignature,
-    sandboxEnv: sandboxEnv,
-    sandboxEnvType: typeof sandboxEnv,
-    isSandbox: isSandbox,
-    isLive: isLive,
-  });
-
   if (!apiKey || !posSignature) {
     throw new Error('Netopia credentials not configured (NETOPIA_API_KEY, NETOPIA_POS_SIGNATURE)');
   }
