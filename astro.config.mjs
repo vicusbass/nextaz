@@ -5,6 +5,7 @@ import tailwindcss from '@tailwindcss/vite';
 
 import sanity from '@sanity/astro';
 import react from '@astrojs/react';
+import svelte from '@astrojs/svelte';
 
 import vercel from '@astrojs/vercel';
 
@@ -14,14 +15,16 @@ export default defineConfig({
 
   vite: {
     plugins: [tailwindcss()],
-    
+    // server: {
+    //   allowedHosts: ['unhomologous-shirly-deliverly.ngrok-free.dev'],
+    // },
   },
 
   integrations: [sanity({
     projectId: 'vrxix2id',
     dataset: 'production',
     useCdn: false
-  }), react()],
+  }), react(), svelte()],
 
   adapter: vercel()
 });
