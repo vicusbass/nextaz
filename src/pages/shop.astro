@@ -177,7 +177,9 @@ const bundleIcons: Record<string, ImageMetadata> = {
     {/* Custom Bundle - Full Width */}
     <article class="product-card mt-4 flex flex-col lg:flex-row lg:items-center lg:py-12">
       {/* Images - Left side on desktop */}
-      <div class="flex h-[220px] w-full items-end justify-center overflow-hidden pb-4 lg:h-auto lg:w-1/2 lg:justify-center lg:pb-0">
+      <div
+        class="flex h-[220px] w-full items-end justify-center overflow-hidden pb-4 lg:h-auto lg:w-1/2 lg:justify-center lg:pb-0"
+      >
         <div class="relative flex items-end">
           <Image
             src={triangle}
@@ -193,10 +195,13 @@ const bundleIcons: Record<string, ImageMetadata> = {
         </div>
       </div>
       {/* Text - Right side on desktop */}
-      <div class="flex flex-col items-center gap-4 p-6 text-center lg:w-1/2 lg:items-start lg:gap-6 lg:px-12 lg:text-left">
+      <div
+        class="flex flex-col items-center gap-4 p-6 text-center lg:w-1/2 lg:items-start lg:gap-6 lg:px-12 lg:text-left"
+      >
         <h3 class="text-xl font-bold text-black lg:text-2xl">Bundle personalizat</h3>
-        <p class="text-gray text-base max-w-[400px] leading-relaxed lg:text-lg">
-          Ai nevoie de o cantitate personalizată sau o selecție specială? Te ajutăm să creezi pachetul perfect pentru tine sau pentru cadouri.
+        <p class="text-gray max-w-[400px] text-base leading-relaxed lg:text-lg">
+          Ai nevoie de o cantitate personalizată sau o selecție specială? Te ajutăm să creezi
+          pachetul perfect pentru tine sau pentru cadouri.
         </p>
         <a href="/contact" class="btn-add-to-cart">Contactează-ne</a>
       </div>

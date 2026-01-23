@@ -3,7 +3,6 @@ import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import { MuxPlayer } from '@mux/mux-player-astro';
 import Layout from '../layouts/Layout.astro';
-import ContactForm from '../components/ContactForm.astro';
 import allWines from '../assets/all-wines.png';
 import allWinesMobile from '../assets/all-wines-mobile.png';
 import gallerySample from '../assets/gallery-sample.png';
@@ -15,7 +14,6 @@ import glass from '../assets/glass.svg';
 import hexagon from '../assets/hexagon.svg';
 import leaf from '../assets/leaf.svg';
 import lemonFlavour from '../assets/lemon-flavour.svg';
-import wineGlass from '../assets/play-wine-glass.jpg';
 
 // Dynamic image imports for wine bottles
 const images = import.meta.glob<{ default: ImageMetadata }>('/src/assets/bottle-*.png', { eager: true });
@@ -301,13 +299,6 @@ const wines: Wine[] = wineEntries
           </div>
         ))
       }
-    </div>
-    <div class="w-full flex flex-col items-center px-[5vw]">
-      <h2 class="mb-8 text-3xl font-bold lg:text-[3.25rem]">Contactează-ne</h2>
-      <div class="w-full flex items-center">
-      <Image src={wineGlass} alt="Wine Glass" class="hidden lg:block h-[48w] w-[48vw] object-cover" loading="eager" />
-      <ContactForm />
-      </div>
     </div>
     <div
       id="command-modal"

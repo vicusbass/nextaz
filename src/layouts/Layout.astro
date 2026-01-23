@@ -6,6 +6,7 @@ import Toast from '../components/cart/Toast.svelte';
 import { ClientRouter } from 'astro:transitions';
 import SpeedInsights from '@vercel/speed-insights/astro';
 import '@fontsource-variable/red-hat-display';
+import ContactForm from '../components/ContactForm.astro';
 
 interface Props {
   title?: string;
@@ -123,6 +124,7 @@ const siteName = 'Nextaz';
     <main class="main-content">
       <slot />
     </main>
+    <ContactForm />
     <Footer transition:persist />
     <Toast client:load transition:persist />
     <SpeedInsights />
