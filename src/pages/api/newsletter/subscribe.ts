@@ -1,12 +1,23 @@
 import type { APIRoute } from 'astro';
 
+export const prerender = false;
+
 const MAILERLITE_API_KEY = import.meta.env.MAILERLITE_API_KEY;
 const MAILERLITE_API_URL = 'https://connect.mailerlite.com/api';
 
 export const POST: APIRoute = async ({ request }) => {
   try {
-    const formData = await request.formData();
-    const email = formData.get('email')?.toString();
+    const text = await request.text();
+
+    if (!text) {
+      return new Response(JSON.stringify({ success: false, message: 'Empty request body' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    const body = JSON.parse(text);
+    const email = body.email;
 
     if (!email) {
       return new Response(JSON.stringify({ success: false, message: 'Email is required' }), {
