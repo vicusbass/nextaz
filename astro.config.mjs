@@ -20,11 +20,15 @@ export default defineConfig({
     // },
   },
 
-  integrations: [sanity({
-    projectId: 'vrxix2id',
-    dataset: 'production',
-    useCdn: false
-  }), react(), svelte()],
+  integrations: [
+    sanity({
+      projectId: 'vrxix2id',
+      dataset: 'production',
+      useCdn: false,
+    }),
+    react(),
+    svelte(),
+  ],
 
-  adapter: vercel()
+  adapter: vercel(),
 });

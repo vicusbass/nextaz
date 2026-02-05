@@ -10,42 +10,41 @@ const isMock = Astro.url.searchParams.get('mock') === 'true';
     <div class="payment-content">
       <div class="success-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M9 12l2 2 4-4" />
-          <circle cx="12" cy="12" r="10" />
+          <path d="M9 12l2 2 4-4"></path>
+          <circle cx="12" cy="12" r="10"></circle>
         </svg>
       </div>
 
-      <h1 class="text-3xl font-bold text-black lg:text-5xl">
-        Mulțumim pentru comandă!
-      </h1>
+      <h1 class="text-3xl font-bold text-black lg:text-5xl">Mulțumim pentru comandă!</h1>
 
-      {orderNumber && (
-        <p class="order-id">
-          Numărul comenzii tale: <strong>{orderNumber}</strong>
-        </p>
-      )}
+      {
+        orderNumber && (
+          <p class="order-id">
+            Numărul comenzii tale: <strong>{orderNumber}</strong>
+          </p>
+        )
+      }
 
       <p class="success-message">
-        Comanda ta a fost plasată cu succes. Vei primi în curând un email de confirmare cu detaliile comenzii.
+        Comanda ta a fost plasată cu succes. Vei primi în curând un email de confirmare cu detaliile
+        comenzii.
       </p>
 
-      {isMock && (
-        <div class="mock-notice">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10" />
-            <path d="M12 8v4M12 16h.01" />
-          </svg>
-          <span>Aceasta este o comandă de test. Plata nu a fost procesată efectiv.</span>
-        </div>
-      )}
+      {
+        isMock && (
+          <div class="mock-notice">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 8v4M12 16h.01" />
+            </svg>
+            <span>Aceasta este o comandă de test. Plata nu a fost procesată efectiv.</span>
+          </div>
+        )
+      }
 
       <div class="actions">
-        <a href="/shop" class="btn-primary">
-          Continuă cumpărăturile
-        </a>
-        <a href="/" class="btn-secondary">
-          Înapoi acasă
-        </a>
+        <a href="/shop" class="btn-primary"> Continuă cumpărăturile </a>
+        <a href="/" class="btn-secondary"> Înapoi acasă </a>
       </div>
     </div>
   </section>
