@@ -62,7 +62,9 @@ export interface CreateOrderParams {
   paymentMethod?: string;
 }
 
-export async function createOrder(params: CreateOrderParams): Promise<{ orderId: string; orderNumber: string } | null> {
+export async function createOrder(
+  params: CreateOrderParams
+): Promise<{ orderId: string; orderNumber: string } | null> {
   const { customer, billingAddress, shippingAddress, items, pricing, paymentMethod } = params;
 
   const orderData: OrderInsert = {
@@ -116,7 +118,9 @@ export async function createOrder(params: CreateOrderParams): Promise<{ orderId:
     .single();
 
   if (error) {
-    console.error(JSON.stringify({ event: 'db_error', operation: 'create_order', error: error.message }));
+    console.error(
+      JSON.stringify({ event: 'db_error', operation: 'create_order', error: error.message })
+    );
     throw new Error(`Failed to create order: ${error.message}`);
   }
 
@@ -145,7 +149,14 @@ export async function updateOrderPaymentStatus(
     .eq('order_number', orderNumber);
 
   if (error) {
-    console.error(JSON.stringify({ event: 'db_error', operation: 'update_order_status', order: orderNumber, error: error.message }));
+    console.error(
+      JSON.stringify({
+        event: 'db_error',
+        operation: 'update_order_status',
+        order: orderNumber,
+        error: error.message,
+      })
+    );
     throw new Error(`Failed to update order: ${error.message}`);
   }
 
@@ -174,7 +185,14 @@ export async function updateOrderShipping(
     .eq('order_number', orderNumber);
 
   if (error) {
-    console.error(JSON.stringify({ event: 'db_error', operation: 'update_shipping', order: orderNumber, error: error.message }));
+    console.error(
+      JSON.stringify({
+        event: 'db_error',
+        operation: 'update_shipping',
+        order: orderNumber,
+        error: error.message,
+      })
+    );
     throw new Error(`Failed to update shipping: ${error.message}`);
   }
 
@@ -195,7 +213,14 @@ export async function updateOrderPaymentReference(
     .eq('order_number', orderNumber);
 
   if (error) {
-    console.error(JSON.stringify({ event: 'db_error', operation: 'update_payment_ref', order: orderNumber, error: error.message }));
+    console.error(
+      JSON.stringify({
+        event: 'db_error',
+        operation: 'update_payment_ref',
+        order: orderNumber,
+        error: error.message,
+      })
+    );
     throw new Error(`Failed to update payment reference: ${error.message}`);
   }
 
@@ -210,7 +235,14 @@ export async function getOrderByNumber(orderNumber: string) {
     .single();
 
   if (error) {
-    console.error(JSON.stringify({ event: 'db_error', operation: 'get_order_by_number', order: orderNumber, error: error.message }));
+    console.error(
+      JSON.stringify({
+        event: 'db_error',
+        operation: 'get_order_by_number',
+        order: orderNumber,
+        error: error.message,
+      })
+    );
     return null;
   }
 
@@ -218,14 +250,17 @@ export async function getOrderByNumber(orderNumber: string) {
 }
 
 export async function getOrderById(orderId: string) {
-  const { data, error } = await supabase
-    .from('orders')
-    .select('*')
-    .eq('id', orderId)
-    .single();
+  const { data, error } = await supabase.from('orders').select('*').eq('id', orderId).single();
 
   if (error) {
-    console.error(JSON.stringify({ event: 'db_error', operation: 'get_order_by_id', orderId, error: error.message }));
+    console.error(
+      JSON.stringify({
+        event: 'db_error',
+        operation: 'get_order_by_id',
+        orderId,
+        error: error.message,
+      })
+    );
     return null;
   }
 

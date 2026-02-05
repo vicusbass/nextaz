@@ -51,7 +51,12 @@ export const POST: APIRoute = async ({ request }) => {
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    console.error(JSON.stringify({ event: 'contact_error', error: error instanceof Error ? error.message : 'Unknown error' }));
+    console.error(
+      JSON.stringify({
+        event: 'contact_error',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      })
+    );
     return new Response(JSON.stringify({ success: false, error: 'server_error' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },

@@ -21,6 +21,6 @@ export const structure: StructureResolver = (S) =>
 
       // Products list
       ...S.documentTypeListItems().filter(
-        (listItem) => !['shop', 'galleryPage'].includes(listItem.getId() ?? '')
+        (listItem) => !['shop', 'galleryPage'].includes(listItem.getId() ?? ''),
       ),
     ])

@@ -9,6 +9,12 @@ dist/
 # Studio
 studio-nextaz/dist/
 studio-nextaz/node_modules/
+studio-nextaz/.sanity/
 
 # Other
 .DS_Store
+.prettierrc.mjs
+.prettierrc
+
+.claude
+docs

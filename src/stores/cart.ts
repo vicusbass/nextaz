@@ -1,5 +1,11 @@
 import { atom, computed } from 'nanostores';
-import type { CartItem, CartState, AnyCartItem, BundleCartItem, BundleWineSelection } from '../types/cart';
+import type {
+  CartItem,
+  CartState,
+  AnyCartItem,
+  BundleCartItem,
+  BundleWineSelection,
+} from '../types/cart';
 import { SGR_DEPOSIT, PACKAGE_BOTTLE_COUNT } from '../config';
 
 // Type guard to check if an item is a BundleCartItem
@@ -136,9 +142,7 @@ export const isCartEmpty = computed(cartState, (state) => state.items.length ===
 // Actions
 export function addToCart(item: Omit<CartItem, 'quantity'>, quantity = 1): void {
   const current = cartState.get();
-  const existingIndex = current.items.findIndex(
-    (i) => i.id === item.id && i.type === item.type
-  );
+  const existingIndex = current.items.findIndex((i) => i.id === item.id && i.type === item.type);
 
   let newItems: CartItem[];
 
@@ -189,7 +193,10 @@ export function updateBundleInCart(bundleId: string, selections: BundleWineSelec
   const current = cartState.get();
   const newItems = current.items.map((item) => {
     if (item.id === bundleId && isBundleCartItem(item)) {
-      const totalPrice = selections.reduce((sum, sel) => sum + sel.discountedPrice * sel.quantity, 0);
+      const totalPrice = selections.reduce(
+        (sum, sel) => sum + sel.discountedPrice * sel.quantity,
+        0
+      );
       const bottleCount = selections.reduce((sum, sel) => sum + sel.quantity, 0);
       return {
         ...item,

@@ -42,7 +42,11 @@ const bundleConfig: BundleConfig = {
     productName: w.productName,
     basePrice: w.basePrice,
     discountPercent: w.discountPercent,
-    image: w.image ? (typeof w.image === 'string' ? w.image : urlFor(w.image)?.width(120).height(180).url()) : undefined,
+    image: w.image
+      ? typeof w.image === 'string'
+        ? w.image
+        : urlFor(w.image)?.width(120).height(180).url()
+      : undefined,
   })),
 };
 ---
@@ -77,14 +81,11 @@ const bundleConfig: BundleConfig = {
     </div>
 
     <div class="flex flex-col items-center gap-4">
-      <p class="text-sm text-gray lg:text-base">
+      <p class="text-gray text-sm lg:text-base">
         {bottleCount} sticle
       </p>
 
-      <ConfigureBundleButton
-        client:visible
-        bundleConfig={bundleConfig}
-      />
+      <ConfigureBundleButton client:visible bundleConfig={bundleConfig} />
     </div>
   </div>
 </div>

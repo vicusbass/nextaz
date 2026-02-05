@@ -22,7 +22,10 @@ const NETOPIA_STATUS = {
   CANCELED: 8,
 } as const;
 
-function mapNetopiaStatusToOrderStatus(netopiaStatus: number): { orderStatus: OrderStatus; paymentStatus: string } {
+function mapNetopiaStatusToOrderStatus(netopiaStatus: number): {
+  orderStatus: OrderStatus;
+  paymentStatus: string;
+} {
   switch (netopiaStatus) {
     case NETOPIA_STATUS.PAID:
     case NETOPIA_STATUS.PAID_PENDING:
@@ -74,13 +77,22 @@ export const POST: APIRoute = async ({ request }) => {
       payload = JSON.parse(params.get('data') || '{}');
     }
 
-    console.log(JSON.stringify({ event: 'ipn_parsed', order: payload.order?.orderID, netopiaStatus: payload.payment?.status, hasVerifyToken: !!verifyToken }));
+    console.log(
+      JSON.stringify({
+        event: 'ipn_parsed',
+        order: payload.order?.orderID,
+        netopiaStatus: payload.payment?.status,
+        hasVerifyToken: !!verifyToken,
+      })
+    );
 
     // Verify IPN signature if Netopia is configured and token is present
     if (isNetopiaConfigured() && verifyToken) {
       const isValid = await verifyIPN(verifyToken, payload);
       if (!isValid) {
-        console.error(JSON.stringify({ event: 'ipn_verification_failed', order: payload.order?.orderID }));
+        console.error(
+          JSON.stringify({ event: 'ipn_verification_failed', order: payload.order?.orderID })
+        );
         return jsonResponse(
           { errorType: 1, errorCode: 'INVALID_SIGNATURE', errorMessage: 'Invalid signature' },
           400
@@ -109,7 +121,15 @@ export const POST: APIRoute = async ({ request }) => {
     // Map Netopia status to our order status
     const { orderStatus, paymentStatus } = mapNetopiaStatusToOrderStatus(netopiaStatus);
 
-    console.log(JSON.stringify({ event: 'ipn_status_mapped', order: orderNumber, netopiaStatus, orderStatus, paymentStatus }));
+    console.log(
+      JSON.stringify({
+        event: 'ipn_status_mapped',
+        order: orderNumber,
+        netopiaStatus,
+        orderStatus,
+        paymentStatus,
+      })
+    );
 
     // Update order in database (Supabase)
     try {
@@ -118,9 +138,22 @@ export const POST: APIRoute = async ({ request }) => {
         paymentReference: netopiaId,
         paidAt: paymentStatus === 'paid' ? new Date().toISOString() : undefined,
       });
-      console.log(JSON.stringify({ event: 'ipn_order_updated', order: orderNumber, orderStatus, paymentStatus }));
+      console.log(
+        JSON.stringify({
+          event: 'ipn_order_updated',
+          order: orderNumber,
+          orderStatus,
+          paymentStatus,
+        })
+      );
     } catch (dbError) {
-      console.error(JSON.stringify({ event: 'ipn_db_error', order: orderNumber, error: dbError instanceof Error ? dbError.message : 'Unknown error' }));
+      console.error(
+        JSON.stringify({
+          event: 'ipn_db_error',
+          order: orderNumber,
+          error: dbError instanceof Error ? dbError.message : 'Unknown error',
+        })
+      );
       // Don't fail the IPN response - Netopia needs confirmation
     }
 
@@ -130,12 +163,25 @@ export const POST: APIRoute = async ({ request }) => {
         const order = await getOrderByNumber(orderNumber);
         if (order) {
           const emailResults = await sendOrderConfirmationEmails(order);
-          console.log(JSON.stringify({ event: 'ipn_emails_sent', order: orderNumber, customer: emailResults.customerEmail.success, admin: emailResults.adminEmail.success }));
+          console.log(
+            JSON.stringify({
+              event: 'ipn_emails_sent',
+              order: orderNumber,
+              customer: emailResults.customerEmail.success,
+              admin: emailResults.adminEmail.success,
+            })
+          );
         } else {
           console.error(JSON.stringify({ event: 'ipn_order_not_found', order: orderNumber }));
         }
       } catch (emailError) {
-        console.error(JSON.stringify({ event: 'ipn_email_error', order: orderNumber, error: emailError instanceof Error ? emailError.message : 'Unknown error' }));
+        console.error(
+          JSON.stringify({
+            event: 'ipn_email_error',
+            order: orderNumber,
+            error: emailError instanceof Error ? emailError.message : 'Unknown error',
+          })
+        );
       }
     }
 
@@ -147,7 +193,12 @@ export const POST: APIRoute = async ({ request }) => {
       errorMessage: 'OK',
     });
   } catch (error) {
-    console.error(JSON.stringify({ event: 'ipn_error', error: error instanceof Error ? error.message : 'Unknown error' }));
+    console.error(
+      JSON.stringify({
+        event: 'ipn_error',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      })
+    );
 
     // Return error response to Netopia
     return jsonResponse(

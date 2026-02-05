@@ -1,4 +1,4 @@
-import groq from 'groq'
+import groq from 'groq';
 
 export const galleryQuery = groq`
   *[_type == "galleryPage" && _id == "galleryPage"][0]{
@@ -20,4 +20,4 @@ export const galleryQuery = groq`
       }
     }
   }
-`
+`;

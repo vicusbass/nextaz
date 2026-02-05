@@ -10,32 +10,31 @@ const errorMessage = Astro.url.searchParams.get('error');
     <div class="payment-content">
       <div class="failure-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10" />
-          <path d="M15 9l-6 6M9 9l6 6" />
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M15 9l-6 6M9 9l6 6"></path>
         </svg>
       </div>
 
-      <h1 class="text-3xl font-bold text-black lg:text-5xl">
-        Plata nu a reușit
-      </h1>
+      <h1 class="text-3xl font-bold text-black lg:text-5xl">Plata nu a reușit</h1>
 
-      {orderId && (
-        <p class="order-id">
-          Comanda: <strong>#{orderId}</strong>
-        </p>
-      )}
+      {
+        orderId && (
+          <p class="order-id">
+            Comanda: <strong>#{orderId}</strong>
+          </p>
+        )
+      }
 
       <p class="failure-message">
-        {errorMessage || 'Plata nu a putut fi procesată. Te rugăm să încerci din nou sau să folosești o altă metodă de plată.'}
+        {
+          errorMessage ||
+            'Plata nu a putut fi procesată. Te rugăm să încerci din nou sau să folosești o altă metodă de plată.'
+        }
       </p>
 
       <div class="actions">
-        <a href="/checkout" class="btn-primary">
-          Încearcă din nou
-        </a>
-        <a href="/cart" class="btn-secondary">
-          Înapoi la coș
-        </a>
+        <a href="/checkout" class="btn-primary"> Încearcă din nou </a>
+        <a href="/cart" class="btn-secondary"> Înapoi la coș </a>
       </div>
 
       <p class="help-text">

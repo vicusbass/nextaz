@@ -41,9 +41,7 @@ export const galleryImage = defineType({
       dimensions: 'image.asset.metadata.dimensions',
     },
     prepare({title, media, mobileOnly, dimensions}) {
-      const aspectRatio = dimensions
-        ? (dimensions.width / dimensions.height).toFixed(2)
-        : null
+      const aspectRatio = dimensions ? (dimensions.width / dimensions.height).toFixed(2) : null
       const orientation =
         aspectRatio && parseFloat(aspectRatio) > 1.1 ? '📐 Rectangle' : '⬜ Square'
 
