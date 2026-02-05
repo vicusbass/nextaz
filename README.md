@@ -29,15 +29,15 @@ npm run format:check  # Check formatting (CI)
 
 ## Environment Variables
 
-| Variable | Service | Required |
-|---|---|---|
-| `SUPABASE_URL` | Supabase | Yes |
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase | Yes |
-| `RESEND_API_KEY` | Resend | Yes |
-| `RESEND_TEMPLATE_CUSTOMER_CONFIRMATION` | Resend | For order emails |
-| `RESEND_TEMPLATE_ADMIN_NOTIFICATION` | Resend | For order emails |
-| `NETOPIA_API_KEY` | Netopia | For payments |
-| `NETOPIA_POS_SIGNATURE` | Netopia | For payments |
-| `NETOPIA_PUBLIC_KEY` | Netopia | For IPN verification |
-| `NETOPIA_SANDBOX` | Netopia | Set `true` for testing |
-| `MAILERLITE_API_KEY` | MailerLite | For newsletter |
+| Variable                                | Service    | Required               |
+| --------------------------------------- | ---------- | ---------------------- |
+| `SUPABASE_URL`                          | Supabase   | Yes                    |
+| `SUPABASE_SERVICE_ROLE_KEY`             | Supabase   | Yes                    |
+| `RESEND_API_KEY`                        | Resend     | Yes                    |
+| `RESEND_TEMPLATE_CUSTOMER_CONFIRMATION` | Resend     | For order emails       |
+| `RESEND_TEMPLATE_ADMIN_NOTIFICATION`    | Resend     | For order emails       |
+| `NETOPIA_API_KEY`                       | Netopia    | For payments           |
+| `NETOPIA_POS_SIGNATURE`                 | Netopia    | For payments           |
+| `NETOPIA_PUBLIC_KEY`                    | Netopia    | For IPN verification   |
+| `NETOPIA_SANDBOX`                       | Netopia    | Set `true` for testing |
+| `MAILERLITE_API_KEY`                    | MailerLite | For newsletter         |
