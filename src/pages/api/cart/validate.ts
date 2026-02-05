@@ -108,7 +108,7 @@ export const POST: APIRoute = async ({ request }) => {
       { status: 200, headers: { 'Content-Type': 'application/json' } }
     );
   } catch (error) {
-    console.error('Cart validation error:', error);
+    console.error(JSON.stringify({ event: 'cart_validation_error', error: error instanceof Error ? error.message : 'Unknown error' }));
     return new Response(
       JSON.stringify({
         success: false,

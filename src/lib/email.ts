@@ -182,7 +182,7 @@ function orderToTemplateVariables(order: Order): OrderTemplateVariables {
  */
 export async function sendCustomerOrderConfirmation(order: Order): Promise<{ success: boolean; error?: string }> {
   if (!TEMPLATES.CUSTOMER_ORDER_CONFIRMATION) {
-    console.error('Customer confirmation template ID not configured (RESEND_TEMPLATE_CUSTOMER_CONFIRMATION)');
+    console.error(JSON.stringify({ event: 'email_template_missing', type: 'customer_confirmation', env: 'RESEND_TEMPLATE_CUSTOMER_CONFIRMATION' }));
     return { success: false, error: 'Template not configured' };
   }
 
@@ -200,15 +200,16 @@ export async function sendCustomerOrderConfirmation(order: Order): Promise<{ suc
     });
 
     if (error) {
-      console.error('Failed to send customer confirmation email:', error);
+      console.error(JSON.stringify({ event: 'email_send_failed', type: 'customer_confirmation', order: order.order_number, to: order.customer_email, templateId: TEMPLATES.CUSTOMER_ORDER_CONFIRMATION, error: error.message }));
       return { success: false, error: error.message };
     }
 
-    console.log(`Customer confirmation email sent to ${order.customer_email} for order ${order.order_number}`);
+    console.log(JSON.stringify({ event: 'email_sent', type: 'customer_confirmation', order: order.order_number, to: order.customer_email }));
     return { success: true };
   } catch (error) {
-    console.error('Error sending customer confirmation email:', error);
-    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    console.error(JSON.stringify({ event: 'email_error', type: 'customer_confirmation', order: order.order_number, to: order.customer_email, error: message }));
+    return { success: false, error: message };
   }
 }
 
@@ -217,7 +218,7 @@ export async function sendCustomerOrderConfirmation(order: Order): Promise<{ suc
  */
 export async function sendAdminOrderNotification(order: Order): Promise<{ success: boolean; error?: string }> {
   if (!TEMPLATES.ADMIN_ORDER_NOTIFICATION) {
-    console.error('Admin notification template ID not configured (RESEND_TEMPLATE_ADMIN_NOTIFICATION)');
+    console.error(JSON.stringify({ event: 'email_template_missing', type: 'admin_notification', env: 'RESEND_TEMPLATE_ADMIN_NOTIFICATION' }));
     return { success: false, error: 'Template not configured' };
   }
 
@@ -236,15 +237,16 @@ export async function sendAdminOrderNotification(order: Order): Promise<{ succes
     });
 
     if (error) {
-      console.error('Failed to send admin notification email:', error);
+      console.error(JSON.stringify({ event: 'email_send_failed', type: 'admin_notification', order: order.order_number, to: ADMIN_EMAIL, templateId: TEMPLATES.ADMIN_ORDER_NOTIFICATION, error: error.message }));
       return { success: false, error: error.message };
     }
 
-    console.log(`Admin notification email sent for order ${order.order_number}`);
+    console.log(JSON.stringify({ event: 'email_sent', type: 'admin_notification', order: order.order_number, to: ADMIN_EMAIL }));
     return { success: true };
   } catch (error) {
-    console.error('Error sending admin notification email:', error);
-    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    console.error(JSON.stringify({ event: 'email_error', type: 'admin_notification', order: order.order_number, error: message }));
+    return { success: false, error: message };
   }
 }
 

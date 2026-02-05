@@ -58,7 +58,7 @@ export function createNetopiaClient(config: NetopiaConfig) {
 
 export function createIpnVerifier(config: NetopiaConfig) {
   if (!config.publicKey) {
-    console.warn('NETOPIA_PUBLIC_KEY not configured - IPN verification will be skipped');
+    console.warn(JSON.stringify({ event: 'netopia_config', warning: 'public_key_missing' }));
     return null;
   }
 
@@ -237,18 +237,12 @@ export async function initiatePayment(params: {
     redirectUrl: params.redirectUrl,
   });
 
-  console.log('Initiating Netopia payment:', {
-    orderID: orderData.orderID,
-    amount: orderData.amount,
-    currency: orderData.currency,
-    notifyUrl: configData.notifyUrl,
-    redirectUrl: configData.redirectUrl,
-  });
+  console.log(JSON.stringify({ event: 'netopia_payment_init', order: orderData.orderID, amount: orderData.amount, currency: orderData.currency }));
 
   try {
     const response = (await netopia.createOrder(configData, paymentData, orderData)) as NetopiaResponse;
 
-    console.log('Netopia response:', JSON.stringify(response, null, 2));
+    console.log(JSON.stringify({ event: 'netopia_response', order: params.orderNumber, code: response.code, hasPaymentUrl: !!response.data?.payment?.paymentURL }));
 
     if (response.code === 200 && response.data?.payment?.paymentURL) {
       return {
@@ -263,7 +257,7 @@ export async function initiatePayment(params: {
       error: response.message || `Netopia error code: ${response.code}`,
     };
   } catch (error) {
-    console.error('Netopia API error:', error);
+    console.error(JSON.stringify({ event: 'netopia_api_error', order: params.orderNumber, error: error instanceof Error ? error.message : 'Unknown error' }));
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown Netopia error',
@@ -312,20 +306,20 @@ export async function verifyIPN(verifyToken: string, ipnData: IPNPayload): Promi
 
     // Check if public key is properly configured
     if (!config.publicKey || config.publicKey.includes('YOUR_KEY_HERE')) {
-      console.warn('IPN verification skipped - public key not properly configured');
+      console.warn(JSON.stringify({ event: 'ipn_verify_skipped', reason: 'public_key_not_configured' }));
       return true; // Allow without verification in development
     }
 
     const ipnVerifier = createIpnVerifier(config);
 
     if (!ipnVerifier) {
-      console.warn('IPN verification skipped - could not create verifier');
+      console.warn(JSON.stringify({ event: 'ipn_verify_skipped', reason: 'verifier_creation_failed' }));
       return true; // Allow in development without public key
     }
 
     // The SDK verify method takes (verifyToken, ipnDataAsJsonString) and returns Promise<IpnVerifyResponse>
     const result = await ipnVerifier.verify(verifyToken, JSON.stringify(ipnData));
-    console.log('IPN verification result:', result);
+    console.log(JSON.stringify({ event: 'ipn_verify_result', errorType: result.errorType }));
 
     // errorType 0 means success
     if (result.errorType === 0) {
@@ -335,17 +329,17 @@ export async function verifyIPN(verifyToken: string, ipnData: IPNPayload): Promi
     // Signature verification failed - in sandbox mode, allow processing anyway
     // The sandbox public key may not match what's configured
     if (!config.isLive) {
-      console.warn('IPN signature verification failed in sandbox mode - allowing processing anyway');
+      console.warn(JSON.stringify({ event: 'ipn_verify_failed_sandbox', warning: 'allowing_in_sandbox' }));
       return true;
     }
 
     // In production, fail verification
     return false;
   } catch (error) {
-    console.error('IPN verification error:', error);
+    console.error(JSON.stringify({ event: 'ipn_verify_error', error: error instanceof Error ? error.message : 'Unknown error' }));
     // In development/sandbox, allow processing even if verification fails
     // In production, you may want to return false here
-    console.warn('Continuing despite verification error (sandbox mode)');
+    console.warn(JSON.stringify({ event: 'ipn_verify_error_sandbox', warning: 'continuing_despite_error' }));
     return true;
   }
 }

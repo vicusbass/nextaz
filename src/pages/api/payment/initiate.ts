@@ -352,9 +352,9 @@ export const POST: APIRoute = async ({ request }) => {
         throw new Error('Failed to create order - no result returned');
       }
       orderNumber = result.orderNumber;
-      console.log('Order created in Supabase:', orderNumber);
+      console.log(JSON.stringify({ event: 'order_created', order: orderNumber }));
     } catch (dbError) {
-      console.error('Failed to save order to database:', dbError);
+      console.error(JSON.stringify({ event: 'order_create_failed', error: dbError instanceof Error ? dbError.message : 'Unknown error' }));
       return new Response(
         JSON.stringify({
           success: false,
@@ -367,7 +367,7 @@ export const POST: APIRoute = async ({ request }) => {
     // Check if Netopia is configured
     if (!isNetopiaConfigured()) {
       // Development mode - redirect to success page directly
-      console.log('Netopia not configured, using mock payment flow');
+      console.log(JSON.stringify({ event: 'payment_mock', order: orderNumber }));
       return new Response(
         JSON.stringify({
           success: true,
@@ -420,7 +420,7 @@ export const POST: APIRoute = async ({ request }) => {
     });
 
     if (!netopiaResult.success) {
-      console.error('Netopia payment initiation failed:', netopiaResult.error);
+      console.error(JSON.stringify({ event: 'payment_initiation_failed', order: orderNumber, error: netopiaResult.error }));
       return new Response(
         JSON.stringify({
           success: false,
@@ -434,11 +434,11 @@ export const POST: APIRoute = async ({ request }) => {
     try {
       await updateOrderPaymentReference(orderNumber, netopiaResult.ntpID);
     } catch (refError) {
-      console.warn('Failed to store payment reference:', refError);
+      console.warn(JSON.stringify({ event: 'payment_ref_store_failed', order: orderNumber, error: refError instanceof Error ? refError.message : 'Unknown error' }));
       // Continue anyway - payment can still proceed
     }
 
-    console.log(`Payment initiated for order ${orderNumber}, redirecting to Netopia`);
+    console.log(JSON.stringify({ event: 'payment_initiated', order: orderNumber }));
 
     return new Response(
       JSON.stringify({
@@ -449,7 +449,7 @@ export const POST: APIRoute = async ({ request }) => {
       { status: 200, headers: { 'Content-Type': 'application/json' } }
     );
   } catch (error) {
-    console.error('Payment initiation error:', error);
+    console.error(JSON.stringify({ event: 'payment_error', error: error instanceof Error ? error.message : 'Unknown error' }));
     return new Response(
       JSON.stringify({
         success: false,
