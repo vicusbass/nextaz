@@ -31,6 +31,14 @@ const freeShippingThreshold = shopData?.freeShippingThreshold ?? 0;
         shippingPrice={shippingPrice}
         freeShippingThreshold={freeShippingThreshold}
       />
+      <div class="netopia-badge">
+        <script
+          is:inline
+          src="https://mny.ro/npId.js?p=159458"
+          type="text/javascript"
+          data-version="vertical"
+          data-contrast-color="#ffffff"></script>
+      </div>
     </div>
   </section>
 </Layout>
@@ -63,5 +71,11 @@ const freeShippingThreshold = shopData?.freeShippingThreshold ?? 0;
 
   .checkout-content {
     max-width: 700px;
+  }
+
+  .netopia-badge {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
   }
 </style>
