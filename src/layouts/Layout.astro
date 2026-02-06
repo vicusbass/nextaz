@@ -18,8 +18,8 @@ interface Props {
 }
 
 const {
-  title = 'Nextaz - un shop de vinuri creat pentru pasionați TODO: change me',
-  description = 'TODO: change me - Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+  title = 'Nextaz - vinuri create pentru pasionați',
+  description = 'Eleganță, prospețime și autenticitate, vinuri create pentru momentele în care vrei să fie bine.',
   image = '/OG.jpg',
   keywords = 'vinuri, shop vinuri, vinuri online, vinuri românești, vinuri internaționale, vinuri premium, cadouri vinuri, degustare vinuri',
   type = 'website',
@@ -33,7 +33,7 @@ const siteName = 'Nextaz';
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="ro">
   <head>
     <meta charset="utf-8" />
     <link rel="icon" type="image/svg+xml" href="/32.svg" />
@@ -79,7 +79,6 @@ const siteName = 'Nextaz';
 
     <!-- WhatsApp specific -->
     <meta property="og:image:secure_url" content={ogImageURL} />
-    <meta property="og:site_name" content={siteName} />
 
     <!-- Additional SEO -->
     <meta name="theme-color" content="#000000" />
@@ -97,7 +96,8 @@ const siteName = 'Nextaz';
         '@context': 'https://schema.org',
         '@type': 'Organization',
         name: 'Nextaz',
-        description: 'Nextaz - un shop de vinuri creat pentru pasionați TODO: change me',
+        description:
+          'Eleganță, prospețime și autenticitate, create pentru momentele în care vrei să fie bine.',
         url: Astro.site,
         logo: new URL('/32.svg', Astro.site),
         sameAs: [
