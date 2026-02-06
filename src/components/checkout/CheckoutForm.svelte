@@ -272,6 +272,7 @@
     <p class="form-note">
       Vei fi redirecționat către pagina de plată securizată Netopia.
     </p>
+
   </div>
 </form>
 
