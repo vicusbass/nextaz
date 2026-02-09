@@ -1,7 +1,7 @@
 import groq from 'groq';
 
 export const shopQuery = groq`
-  *[_type == "shop" && _id == "shop"][0]{
+  *[_type == "shop"][0]{
     title,
     products[]->{
       _id,

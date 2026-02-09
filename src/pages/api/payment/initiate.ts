@@ -104,9 +104,9 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
-    // Extract IDs for products and slugs for bundles
+    // Extract IDs for products (and packages, which are also products) and slugs for bundles
     const productIds = cartItems
-      .filter((i): i is CartItem => i.type === 'product')
+      .filter((i): i is CartItem => i.type === 'product' || i.type === 'package')
       .map((i) => i.id);
 
     // For configured bundles, extract the bundleSlug
@@ -368,18 +368,35 @@ export const POST: APIRoute = async ({ request }) => {
       orderNumber = result.orderNumber;
       console.log(JSON.stringify({ event: 'order_created', order: orderNumber }));
     } catch (dbError) {
+      const errorMessage = dbError instanceof Error ? dbError.message : 'Unknown error';
+      const isConnectionError =
+        errorMessage.includes('fetch failed') ||
+        errorMessage.includes('ECONNREFUSED') ||
+        errorMessage.includes('network') ||
+        errorMessage.includes('timeout') ||
+        errorMessage.includes('paused') ||
+        errorMessage.includes('EHOSTUNREACH') ||
+        errorMessage.includes('503');
+
       console.error(
         JSON.stringify({
           event: 'order_create_failed',
-          error: dbError instanceof Error ? dbError.message : 'Unknown error',
+          error: errorMessage,
+          isConnectionError,
         })
       );
+
+      const userError = isConnectionError
+        ? 'Serviciul de comenzi este temporar indisponibil. Te rugăm să încerci din nou în câteva minute.'
+        : 'A apărut o eroare la salvarea comenzii. Te rugăm să încerci din nou.';
+
       return new Response(
         JSON.stringify({
           success: false,
-          error: 'A apărut o eroare la salvarea comenzii',
+          error: userError,
+          retryable: isConnectionError,
         }),
-        { status: 500, headers: { 'Content-Type': 'application/json' } }
+        { status: 503, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
