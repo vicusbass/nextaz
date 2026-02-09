@@ -7,7 +7,7 @@ export const cartValidationQuery = groq`{
     name,
     price
   },
-  "shop": *[_type == "shop" && _id == "shop"][0]{
+  "shop": *[_type == "shop"][0]{
     "bundles": bundles[slug.current in $bundleSlugs]{
       "id": slug.current,
       name,

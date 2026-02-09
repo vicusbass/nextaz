@@ -42,8 +42,10 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
-    // Extract IDs for products and slugs for bundles
-    const productIds = items.filter((i) => i.type === 'product').map((i) => i.id);
+    // Extract IDs for products (and packages, which are also products) and slugs for bundles
+    const productIds = items
+      .filter((i) => i.type === 'product' || i.type === 'package')
+      .map((i) => i.id);
     const bundleSlugs = items.filter((i) => i.type === 'bundle').map((i) => i.id);
 
     // Fetch current prices from Sanity
