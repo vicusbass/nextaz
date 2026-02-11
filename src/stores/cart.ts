@@ -223,7 +223,6 @@ export const toastVisible = atom<boolean>(false);
 let toastTimeout: ReturnType<typeof setTimeout> | null = null;
 
 export function showToast(message: string, duration = 3000): void {
-  // Clear any existing timeout
   if (toastTimeout) {
     clearTimeout(toastTimeout);
   }
@@ -233,7 +232,6 @@ export function showToast(message: string, duration = 3000): void {
 
   toastTimeout = setTimeout(() => {
     toastVisible.set(false);
-    // Clear message after fade out animation
     setTimeout(() => {
       toastMessage.set(null);
     }, 300);

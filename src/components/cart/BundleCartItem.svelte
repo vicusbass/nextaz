@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { BundleCartItem, BundleConfig } from '../../types/cart';
-  import { removeFromCart, formatPrice } from '../../stores/cart';
+  import { removeFromCart, formatPrice, showToast } from '../../stores/cart';
   import { editBundle } from '../../stores/bundleConfigurator';
   import { SGR_DEPOSIT } from '../../config';
 
@@ -13,6 +13,7 @@
 
   function handleRemove() {
     removeFromCart(item.id, 'bundle');
+    showToast('Pachet eliminat din coș');
   }
 
   function handleEdit() {
