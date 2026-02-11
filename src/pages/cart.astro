@@ -62,7 +62,9 @@ const bundleConfigs: BundleConfig[] = (shopData?.bundles ?? [])
         productName: w.productName,
         basePrice: w.basePrice,
         discountPercent: w.discountPercent,
-        image: w.image ? urlFor(w.image)?.width(120).height(180).url() : undefined,
+        image: w.image
+          ? urlFor(w.image)?.width(120).height(180).auto('format').quality(80).url()
+          : undefined,
       })),
   }));
 ---
