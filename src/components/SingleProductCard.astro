@@ -64,7 +64,7 @@ const cartImageUrl = urlFor(image)?.width(160).height(240).fit('max').url();
     </div>
 
     <AddToCartButton
-      client:visible
+      client:load
       productId={id}
       productName={name}
       productPrice={price}

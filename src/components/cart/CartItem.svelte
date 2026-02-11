@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { CartItem } from '../../types/cart';
-  import { updateQuantity, removeFromCart, formatPrice } from '../../stores/cart';
+  import { updateQuantity, removeFromCart, formatPrice, showToast } from '../../stores/cart';
   import { SGR_DEPOSIT, PACKAGE_BOTTLE_COUNT } from '../../config';
 
   interface Props {
@@ -16,13 +16,12 @@
   function decrement() {
     if (item.quantity > 1) {
       updateQuantity(item.id, item.type, item.quantity - 1);
-    } else {
-      removeFromCart(item.id, item.type);
     }
   }
 
   function remove() {
     removeFromCart(item.id, item.type);
+    showToast('Produs eliminat din coș');
   }
 
   const lineTotal = $derived(item.price * item.quantity);
@@ -57,6 +56,7 @@
         <button
           class="quantity-btn"
           onclick={decrement}
+          disabled={item.quantity <= 1}
           aria-label="Scade cantitatea"
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
