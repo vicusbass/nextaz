@@ -160,7 +160,7 @@ export function createPaymentRequest(params: {
 }) {
   // Config data - use any to bypass SDK strict types
   const configData = {
-    emailTemplate: 'Confirmare plată Necstaz',
+    emailTemplate: 'Confirmare plată Nextaz',
     emailSubject: `Plată comandă ${params.orderNumber}`,
     notifyUrl: params.notifyUrl,
     redirectUrl: params.redirectUrl,
@@ -249,6 +249,16 @@ export async function initiatePayment(params: {
   );
 
   try {
+    console.log(
+      JSON.stringify({
+        event: 'netopia_request_details',
+        order: params.orderNumber,
+        isLive: config.isLive,
+        notifyUrl: configData.notifyUrl,
+        redirectUrl: configData.redirectUrl,
+      })
+    );
+
     const response = (await netopia.createOrder(
       configData,
       paymentData,
@@ -260,7 +270,9 @@ export async function initiatePayment(params: {
         event: 'netopia_response',
         order: params.orderNumber,
         code: response.code,
+        message: response.message,
         hasPaymentUrl: !!response.data?.payment?.paymentURL,
+        rawResponse: JSON.stringify(response),
       })
     );
 
