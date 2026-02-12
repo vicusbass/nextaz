@@ -161,6 +161,7 @@
         body: JSON.stringify({
           customer,
           cartItems: items,
+          shippingPrice: hasFreeShipping ? 0 : shippingPrice,
         }),
       });
 

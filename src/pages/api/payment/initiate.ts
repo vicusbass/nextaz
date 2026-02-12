@@ -67,9 +67,14 @@ function validatePhone(phone: string): boolean {
 export const POST: APIRoute = async ({ request }) => {
   try {
     const body = await request.json();
-    const { customer, cartItems } = body as {
+    const {
+      customer,
+      cartItems,
+      shippingPrice = 0,
+    } = body as {
       customer: Customer;
       cartItems: AnyCartItem[];
+      shippingPrice?: number;
     };
 
     // Validate request
@@ -256,9 +261,9 @@ export const POST: APIRoute = async ({ request }) => {
       }
     }
 
-    // Calculate SGR deposit and total
+    // Calculate SGR deposit, shipping, and total
     const sgrTotal = bottleCount * SGR_DEPOSIT;
-    const total = subtotal + sgrTotal;
+    const total = subtotal + sgrTotal + shippingPrice;
 
     if (errors.length > 0) {
       return new Response(
@@ -352,6 +357,7 @@ export const POST: APIRoute = async ({ request }) => {
       items: orderItems,
       pricing: {
         subtotal,
+        shippingCost: shippingPrice,
         taxAmount: sgrTotal, // SGR deposit stored as tax
         total,
       },
@@ -436,11 +442,11 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     // Initiate Netopia payment
-    const netopiaResult = await initiatePayment({
+    const paymentRequest = {
       orderNumber,
       amount: total,
       currency: 'RON',
-      description: `Comandă ${orderNumber} - Necstaz`,
+      description: `Comandă ${orderNumber} - Nextaz`,
       customer: {
         firstName,
         lastName,
@@ -453,7 +459,21 @@ export const POST: APIRoute = async ({ request }) => {
       },
       notifyUrl: `${origin}/api/payment/ipn`,
       redirectUrl: `${origin}/payment/success?orderNumber=${orderNumber}`,
-    });
+    };
+
+    console.log(
+      JSON.stringify({
+        event: 'payment_request',
+        order: orderNumber,
+        subtotal,
+        sgrTotal,
+        shippingPrice,
+        total,
+        items: validatedItems.map((i) => ({ name: i.name, price: i.price, qty: i.quantity })),
+      })
+    );
+
+    const netopiaResult = await initiatePayment(paymentRequest);
 
     if (!netopiaResult.success) {
       console.error(
