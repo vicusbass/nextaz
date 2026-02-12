@@ -254,6 +254,8 @@ export async function initiatePayment(params: {
         event: 'netopia_request_details',
         order: params.orderNumber,
         isLive: config.isLive,
+        apiKeyPrefix: config.apiKey.substring(0, 6),
+        posSignature: config.posSignature,
         notifyUrl: configData.notifyUrl,
         redirectUrl: configData.redirectUrl,
       })
