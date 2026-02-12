@@ -227,7 +227,6 @@ export async function initiatePayment(params: {
   { success: true; paymentUrl: string; ntpID: string } | { success: false; error: string }
 > {
   const config = getNetopiaConfig();
-  const netopia = createNetopiaClient(config);
 
   const { configData, paymentData, orderData } = createPaymentRequest({
     orderNumber: params.orderNumber,
@@ -239,56 +238,67 @@ export async function initiatePayment(params: {
     redirectUrl: params.redirectUrl,
   });
 
+  // Build request body (same structure the SDK sends)
+  const requestBody = {
+    config: configData,
+    payment: paymentData,
+    order: {
+      ...orderData,
+      ntpID: orderData.ntpID || null,
+      posSignature: config.posSignature,
+    },
+  };
+
+  // SDK has wrong live URL — use correct endpoints per Netopia docs
+  const baseUrl = config.isLive
+    ? 'https://secure.mobilpay.ro/pay'
+    : 'https://secure-sandbox.netopia-payments.com';
+  const url = `${baseUrl}/payment/card/start`;
+
   console.log(
     JSON.stringify({
       event: 'netopia_payment_init',
       order: orderData.orderID,
       amount: orderData.amount,
       currency: orderData.currency,
+      url,
+      isLive: config.isLive,
     })
   );
 
   try {
-    console.log(
-      JSON.stringify({
-        event: 'netopia_request_details',
-        order: params.orderNumber,
-        isLive: config.isLive,
-        apiKeyPrefix: config.apiKey.substring(0, 6),
-        posSignature: config.posSignature,
-        notifyUrl: configData.notifyUrl,
-        redirectUrl: configData.redirectUrl,
-      })
-    );
+    const fetchResponse = await fetch(url, {
+      method: 'POST',
+      headers: {
+        Authorization: config.apiKey,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestBody),
+    });
 
-    const response = (await netopia.createOrder(
-      configData,
-      paymentData,
-      orderData
-    )) as NetopiaResponse;
+    const data = await fetchResponse.json();
 
     console.log(
       JSON.stringify({
         event: 'netopia_response',
         order: params.orderNumber,
-        code: response.code,
-        message: response.message,
-        hasPaymentUrl: !!response.data?.payment?.paymentURL,
-        rawResponse: JSON.stringify(response),
+        httpStatus: fetchResponse.status,
+        hasPaymentUrl: !!data?.payment?.paymentURL,
+        rawResponse: JSON.stringify(data),
       })
     );
 
-    if (response.code === 200 && response.data?.payment?.paymentURL) {
+    if (fetchResponse.status === 200 && data?.payment?.paymentURL) {
       return {
         success: true,
-        paymentUrl: response.data.payment.paymentURL,
-        ntpID: response.data.payment.ntpID,
+        paymentUrl: data.payment.paymentURL,
+        ntpID: data.payment.ntpID,
       };
     }
 
     return {
       success: false,
-      error: response.message || `Netopia error code: ${response.code}`,
+      error: data?.message || `Netopia HTTP ${fetchResponse.status}`,
     };
   } catch (error) {
     console.error(
