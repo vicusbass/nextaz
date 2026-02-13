@@ -372,8 +372,16 @@ export async function verifyIPN(verifyToken: string, ipnData: IPNPayload): Promi
     }
 
     // The SDK verify method takes (verifyToken, ipnDataAsJsonString) and returns Promise<IpnVerifyResponse>
-    const result = await ipnVerifier.verify(verifyToken, JSON.stringify(ipnData));
-    console.log(JSON.stringify({ event: 'ipn_verify_result', errorType: result.errorType }));
+    const ipnJsonString = JSON.stringify(ipnData);
+    const result = await ipnVerifier.verify(verifyToken, ipnJsonString);
+    console.log(
+      JSON.stringify({
+        event: 'ipn_verify_result',
+        errorType: result.errorType,
+        errorCode: result.errorCode,
+        errorMessage: result.errorMessage,
+      })
+    );
 
     // errorType 0 means success
     if (result.errorType === 0) {
