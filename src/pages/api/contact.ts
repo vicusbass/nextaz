@@ -22,7 +22,7 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     const { error } = await resend.emails.send({
-      from: 'Nextaz Contact <onboarding@resend.dev>',
+      from: 'Nextaz Contact <contact@nextaz.ro>',
       to: 'contact@nextaz.ro',
       replyTo: email,
       subject: `[Nextaz Contact] ${subject}`,
