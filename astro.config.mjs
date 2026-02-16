@@ -8,10 +8,11 @@ import react from '@astrojs/react';
 import svelte from '@astrojs/svelte';
 
 import vercel from '@astrojs/vercel';
+import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://nextaz.vercel.app',
+  site: 'https://nextaz.ro',
 
   vite: {
     plugins: [tailwindcss()],
@@ -28,6 +29,7 @@ export default defineConfig({
     }),
     react(),
     svelte(),
+    sitemap(),
   ],
 
   adapter: vercel(),
