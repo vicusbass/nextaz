@@ -422,11 +422,9 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     // Build customer data for Netopia
-    // Use HTTPS for callback URLs (ngrok and production both require HTTPS)
-    let origin = new URL(request.url).origin;
-    if (origin.startsWith('http://') && !origin.includes('localhost')) {
-      origin = origin.replace('http://', 'https://');
-    }
+    // Always use the configured site URL for callback URLs to avoid Vercel deployment URL redirects
+    const siteUrl = import.meta.env.SITE || 'https://nextaz.ro';
+    const origin = siteUrl.replace(/\/$/, '');
     let firstName: string;
     let lastName: string;
 
