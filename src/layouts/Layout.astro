@@ -13,7 +13,7 @@ interface Props {
   description?: string;
   image?: string;
   keywords?: string;
-  type?: 'website';
+  type?: 'website' | 'product';
   author?: string;
 }
 
@@ -92,7 +92,7 @@ const siteName = 'Nextaz';
       is:inline
       set:html={JSON.stringify({
         '@context': 'https://schema.org',
-        '@type': 'Organization',
+        '@type': 'OnlineStore',
         name: 'Nextaz',
         description:
           'Eleganță, prospețime și autenticitate, create pentru momentele în care vrei să fie bine.',

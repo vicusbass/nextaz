@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://nextaz.ro/sitemap.xml
+Sitemap: https://nextaz.ro/sitemap-index.xml
