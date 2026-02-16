@@ -66,8 +66,8 @@ export function createIpnVerifier(config: NetopiaConfig) {
     posSignature: config.posSignature,
     posSignatureSet: [config.posSignature],
     publicKeyStr: config.publicKey,
-    hashMethod: 'sha512',
-    alg: 'RS512',
+    hashMethod: 'sha256',
+    alg: 'RS256',
   });
 }
 
@@ -388,17 +388,16 @@ export async function verifyIPN(verifyToken: string, ipnData: IPNPayload): Promi
       return true;
     }
 
-    // Signature verification failed — log but allow processing
-    // TODO: investigate certificate/algorithm mismatch and enforce strict verification
-    console.warn(
+    console.error(
       JSON.stringify({
         event: 'ipn_verify_failed',
-        warning: 'allowing_despite_failure',
         isLive: config.isLive,
         errorType: result.errorType,
+        errorCode: result.errorCode,
+        errorMessage: result.errorMessage,
       })
     );
-    return true;
+    return false;
   } catch (error) {
     console.error(
       JSON.stringify({
@@ -406,11 +405,6 @@ export async function verifyIPN(verifyToken: string, ipnData: IPNPayload): Promi
         error: error instanceof Error ? error.message : 'Unknown error',
       })
     );
-    // In development/sandbox, allow processing even if verification fails
-    // In production, you may want to return false here
-    console.warn(
-      JSON.stringify({ event: 'ipn_verify_error_sandbox', warning: 'continuing_despite_error' })
-    );
-    return true;
+    return false;
   }
 }
