@@ -207,11 +207,3 @@ export const POST: APIRoute = async ({ request }) => {
     );
   }
 };
-
-// Also support GET for testing/health check
-export const GET: APIRoute = async () => {
-  return jsonResponse({
-    status: 'IPN endpoint active',
-    netopiaConfigured: isNetopiaConfigured(),
-  });
-};
