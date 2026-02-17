@@ -29,7 +29,16 @@ export default defineConfig({
     }),
     react(),
     svelte(),
-    sitemap(),
+    sitemap({
+      filter: (page) =>
+        ![
+          'https://nextaz.ro/cart/',
+          'https://nextaz.ro/checkout/',
+          'https://nextaz.ro/payment/failure/',
+          'https://nextaz.ro/payment/success/',
+          'https://nextaz.ro/setari-cookies/',
+        ].includes(page),
+    }),
   ],
 
   adapter: vercel(),

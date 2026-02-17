@@ -15,6 +15,7 @@ interface Props {
   keywords?: string;
   type?: 'website' | 'product';
   author?: string;
+  noindex?: boolean;
 }
 
 const {
@@ -24,6 +25,7 @@ const {
   keywords = 'vinuri, shop vinuri, vinuri online, vinuri românești, vinuri internaționale, vinuri premium, cadouri vinuri, degustare vinuri',
   type = 'website',
   author = 'Nextaz Team',
+  noindex = false,
 } = Astro.props;
 
 const siteUrl = Astro.site;
@@ -46,7 +48,7 @@ const siteName = 'Nextaz';
     <meta name="description" content={description} />
     <meta name="keywords" content={keywords} />
     <meta name="author" content={author} />
-    <meta name="robots" content="index, follow" />
+    <meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow'} />
     <meta name="language" content="Romanian" />
     <link rel="canonical" href={canonicalURL} />
 
