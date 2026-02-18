@@ -323,7 +323,25 @@ export async function initiatePayment(params: {
       body: JSON.stringify(requestBody),
     });
 
-    const data = await fetchResponse.json();
+    const responseText = await fetchResponse.text();
+
+    let data: any;
+    try {
+      data = JSON.parse(responseText);
+    } catch {
+      console.error(
+        JSON.stringify({
+          event: 'netopia_non_json_response',
+          order: params.orderNumber,
+          httpStatus: fetchResponse.status,
+          responsePreview: responseText.substring(0, 500),
+        })
+      );
+      return {
+        success: false,
+        error: `Netopia returned non-JSON response (HTTP ${fetchResponse.status})`,
+      };
+    }
 
     console.log(
       JSON.stringify({
