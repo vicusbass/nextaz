@@ -91,6 +91,7 @@ export interface CompanyCustomer {
   phone: string;
   companyName: string;
   cui: string; // Romanian Tax ID
+  nrCode?: string; // Trade register number (Număr Registrul Comerțului), e.g. J40/1234/2010
   contactPerson: string;
   deliveryAddress: Address;
   billingAddress: Address;
@@ -162,3 +163,49 @@ export const ROMANIAN_COUNTIES = [
 ] as const;
 
 export type RomanianCounty = (typeof ROMANIAN_COUNTIES)[number];
+
+// Maps Romanian county names to their 2-letter codes (used by Netopia)
+export const COUNTY_CODES: Record<string, string> = {
+  Alba: 'AB',
+  Arad: 'AR',
+  Argeș: 'AG',
+  Bacău: 'BC',
+  Bihor: 'BH',
+  'Bistrița-Năsăud': 'BN',
+  Botoșani: 'BT',
+  Brașov: 'BV',
+  Brăila: 'BR',
+  București: 'B',
+  Buzău: 'BZ',
+  'Caraș-Severin': 'CS',
+  Călărași: 'CL',
+  Cluj: 'CJ',
+  Constanța: 'CT',
+  Covasna: 'CV',
+  Dâmbovița: 'DB',
+  Dolj: 'DJ',
+  Galați: 'GL',
+  Giurgiu: 'GR',
+  Gorj: 'GJ',
+  Harghita: 'HR',
+  Hunedoara: 'HD',
+  Ialomița: 'IL',
+  Iași: 'IS',
+  Ilfov: 'IF',
+  Maramureș: 'MM',
+  Mehedinți: 'MH',
+  Mureș: 'MS',
+  Neamț: 'NT',
+  Olt: 'OT',
+  Prahova: 'PH',
+  'Satu Mare': 'SM',
+  Sălaj: 'SJ',
+  Sibiu: 'SB',
+  Suceava: 'SV',
+  Teleorman: 'TR',
+  Timiș: 'TM',
+  Tulcea: 'TL',
+  Vaslui: 'VS',
+  Vâlcea: 'VL',
+  Vrancea: 'VN',
+};
