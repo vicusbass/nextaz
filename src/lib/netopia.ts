@@ -191,6 +191,7 @@ export function createPaymentRequest(params: {
         const cuiUpper = cui.toUpperCase();
         const isVatPayer = cuiUpper.startsWith('RO');
         return {
+          order_profile: '4',
           company: params.company!.name,
           vat_code: isVatPayer ? cuiUpper : `RO${cuiUpper}`,
           vat_payer: isVatPayer ? '1' : '0',
