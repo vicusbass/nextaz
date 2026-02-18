@@ -191,10 +191,6 @@ export function createPaymentRequest(params: {
         const cuiUpper = cui.toUpperCase();
         const isVatPayer = cuiUpper.startsWith('RO');
         return {
-          owner: '',
-          order_profile: '4',
-          profile_type: '0',
-          client_id: '',
           company: params.company!.name,
           vat_code: isVatPayer ? cuiUpper : `RO${cuiUpper}`,
           vat_payer: isVatPayer ? '1' : '0',
@@ -310,6 +306,8 @@ export async function initiatePayment(params: {
       currency: orderData.currency,
       url,
       isLive: config.isLive,
+      hasCompanyData: !!orderData.data,
+      orderData: JSON.stringify(orderData.data),
     })
   );
 
