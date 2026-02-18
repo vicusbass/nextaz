@@ -72,6 +72,20 @@
     </div>
 
     <div class="form-group">
+      <label for="nrCode" class="form-label">
+        Număr Registrul Comerțului
+      </label>
+      <input
+        type="text"
+        id="nrCode"
+        class="form-input"
+        value={customer.nrCode ?? ''}
+        oninput={(e) => updateField('nrCode', e.currentTarget.value || undefined)}
+        placeholder="Ex: J40/1234/2010"
+      />
+    </div>
+
+    <div class="form-group">
       <label for="contactPerson" class="form-label">
         Persoană de contact <span class="required">*</span>
       </label>

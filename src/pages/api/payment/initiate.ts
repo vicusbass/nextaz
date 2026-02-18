@@ -12,6 +12,7 @@ import type {
   AnyCartItem,
   BundleCartItem,
 } from '../../../types/cart';
+import { COUNTY_CODES } from '../../../types/cart';
 import { SGR_DEPOSIT, PACKAGE_BOTTLE_COUNT } from '../../../config';
 import {
   createOrder,
@@ -439,6 +440,25 @@ export const POST: APIRoute = async ({ request }) => {
       lastName = companyCustomer.contactPerson?.split(' ').slice(1).join(' ') || '';
     }
 
+    // Build company data for Netopia when customer is a company
+    const companyPayload =
+      customer.type === 'company'
+        ? (() => {
+            const companyCustomer = customer as CompanyCustomer;
+            const billingCounty = (
+              customer.sameAddress ? customer.deliveryAddress : customer.billingAddress
+            ).county;
+            return {
+              name: companyCustomer.companyName,
+              cui: companyCustomer.cui,
+              contactFirstName: firstName,
+              contactLastName: lastName,
+              nrCode: companyCustomer.nrCode,
+              countyCode: COUNTY_CODES[billingCounty] ?? '',
+            };
+          })()
+        : undefined;
+
     // Initiate Netopia payment
     const paymentRequest = {
       orderNumber,
@@ -455,6 +475,7 @@ export const POST: APIRoute = async ({ request }) => {
         county: customer.deliveryAddress.county,
         postalCode: customer.deliveryAddress.postalCode,
       },
+      company: companyPayload,
       notifyUrl: `${origin}/api/payment/ipn`,
       redirectUrl: `${origin}/payment/success?orderNumber=${orderNumber}`,
     };

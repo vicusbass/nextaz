@@ -155,6 +155,14 @@ export function createPaymentRequest(params: {
     county: string;
     postalCode: string;
   };
+  company?: {
+    name: string;
+    cui: string;
+    contactFirstName: string;
+    contactLastName: string;
+    nrCode?: string;
+    countyCode?: string;
+  };
   notifyUrl: string;
   redirectUrl: string;
 }) {
@@ -175,6 +183,35 @@ export function createPaymentRequest(params: {
       type: 'card',
     },
   } as any;
+
+  // Build company data block if this is a company order
+  const companyData = params.company
+    ? (() => {
+        const cui = params.company!.cui.trim();
+        const cuiUpper = cui.toUpperCase();
+        const isVatPayer = cuiUpper.startsWith('RO');
+        return {
+          owner: '',
+          order_profile: '4',
+          profile_type: '0',
+          client_id: '',
+          company: params.company!.name,
+          vat_code: isVatPayer ? cuiUpper : `RO${cuiUpper}`,
+          vat_payer: isVatPayer ? '1' : '0',
+          tax_code: cuiUpper.replace(/^RO/, ''),
+          nr_code: params.company!.nrCode ?? '',
+          first_name: params.company!.contactFirstName,
+          last_name: params.company!.contactLastName,
+          email: params.customer.email,
+          phone: params.customer.phone,
+          address: params.customer.address,
+          city: params.customer.city,
+          county: params.customer.county,
+          county_code: params.company!.countyCode ?? '',
+          country: 'RO',
+        };
+      })()
+    : undefined;
 
   // Minimal order data that was working before
   const orderData = {
@@ -197,6 +234,7 @@ export function createPaymentRequest(params: {
       postalCode: params.customer.postalCode || '000000',
     },
     installments: { selected: 0 },
+    ...(companyData ? { data: companyData } : {}),
   } as any;
 
   return { configData, paymentData, orderData };
@@ -221,6 +259,14 @@ export async function initiatePayment(params: {
     county: string;
     postalCode: string;
   };
+  company?: {
+    name: string;
+    cui: string;
+    contactFirstName: string;
+    contactLastName: string;
+    nrCode?: string;
+    countyCode?: string;
+  };
   notifyUrl: string;
   redirectUrl: string;
 }): Promise<
@@ -234,6 +280,7 @@ export async function initiatePayment(params: {
     currency: params.currency || 'RON',
     description: params.description || `Comandă ${params.orderNumber}`,
     customer: params.customer,
+    company: params.company,
     notifyUrl: params.notifyUrl,
     redirectUrl: params.redirectUrl,
   });
