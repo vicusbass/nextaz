@@ -82,12 +82,34 @@ const bundleIcons: Record<string, ImageMetadata> = {
   'bundle-2': silver,
   'bundle-3': gold,
 };
+
+// ItemList JSON-LD for Google to understand product catalog
+const allListedProducts = [...singleProducts, ...packages];
+const itemListJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'Vinuri Nextaz',
+  description: 'Colecția de vinuri Nextaz',
+  numberOfItems: allListedProducts.length,
+  itemListElement: allListedProducts.map((product, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    url: new URL(`/produse/${product.slug.current}`, Astro.site).toString(),
+    name: product.name,
+  })),
+};
 ---
 
 <Layout
   title="Shop | Nextaz"
   description="Descoperă colecția noastră de vinuri premium. Vinuri românești și internaționale, pachete cadou și selecții personalizate."
 >
+  <script
+    type="application/ld+json"
+    is:inline
+    set:html={JSON.stringify(itemListJsonLd)}
+    slot="head"
+  />
   <!-- Hero Section -->
   <section
     id="shop-hero"
