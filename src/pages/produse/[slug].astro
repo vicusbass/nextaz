@@ -1,0 +1,184 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { Image } from 'astro:assets';
+import { loadQuery } from '../../utils/loadQuery';
+import { urlFor } from '../../utils/sanity';
+import { allProductSlugsQuery, productBySlugQuery } from '../../queries/product';
+import AddToCartButton from '../../components/cart/AddToCartButton.svelte';
+import { SGR_DEPOSIT } from '../../config';
+
+export async function getStaticPaths() {
+  const { data: products } = await loadQuery<Array<{ slug: string; productType: string }>>({
+    query: allProductSlugsQuery,
+  });
+
+  return (products ?? []).map((product) => ({
+    params: { slug: product.slug },
+  }));
+}
+
+const { slug } = Astro.params;
+
+const { data: product } = await loadQuery<{
+  _id: string;
+  name: string;
+  slug: { current: string };
+  productType: 'single' | 'package' | 'bundle';
+  image: any;
+  description: string;
+  price: number;
+} | null>({
+  query: productBySlugQuery,
+  params: { slug },
+});
+
+if (!product) {
+  return Astro.redirect('/shop');
+}
+
+const imageUrl = urlFor(product.image)?.width(800).auto('format').quality(80).url();
+const cartImageUrl = urlFor(product.image)
+  ?.width(160)
+  .height(240)
+  .fit('max')
+  .auto('format')
+  .quality(80)
+  .url();
+const ogImageUrl =
+  urlFor(product.image)?.width(1200).height(630).fit('max').auto('format').quality(80).url() ??
+  '/OG.jpeg';
+
+const canonicalUrl = new URL(`/produse/${product.slug.current}`, Astro.site).toString();
+
+const itemType = product.productType === 'single' ? 'product' : 'package';
+
+const productJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name: product.name,
+  description: product.description,
+  image: imageUrl,
+  url: canonicalUrl,
+  brand: {
+    '@type': 'Brand',
+    name: 'Nextaz',
+  },
+  offers: {
+    '@type': 'Offer',
+    price: product.price,
+    priceCurrency: 'RON',
+    availability: 'https://schema.org/InStock',
+    url: canonicalUrl,
+    seller: {
+      '@type': 'Organization',
+      name: 'Nextaz',
+    },
+  },
+};
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: 'Acasă',
+      item: new URL('/', Astro.site).toString(),
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: 'Shop',
+      item: new URL('/shop', Astro.site).toString(),
+    },
+    {
+      '@type': 'ListItem',
+      position: 3,
+      name: product.name,
+      item: canonicalUrl,
+    },
+  ],
+};
+---
+
+<Layout
+  title={`${product.name} | Nextaz`}
+  description={product.description}
+  image={ogImageUrl}
+  type="product"
+>
+  <script
+    type="application/ld+json"
+    is:inline
+    set:html={JSON.stringify(productJsonLd)}
+    slot="head"
+  />
+  <script
+    type="application/ld+json"
+    is:inline
+    set:html={JSON.stringify(breadcrumbJsonLd)}
+    slot="head"
+  />
+
+  <section class="px-6 pt-32 pb-16 lg:px-30 lg:pt-40 lg:pb-24">
+    <div class="mx-auto max-w-6xl">
+      <!-- Breadcrumb -->
+      <nav aria-label="Breadcrumb" class="mb-8">
+        <ol class="flex items-center gap-2 text-sm text-gray-500">
+          <li><a href="/" class="hover:text-black">Acasă</a></li>
+          <li>/</li>
+          <li><a href="/shop" class="hover:text-black">Shop</a></li>
+          <li>/</li>
+          <li class="font-medium text-black">{product.name}</li>
+        </ol>
+      </nav>
+
+      <div class="flex flex-col gap-8 lg:flex-row lg:gap-16">
+        <!-- Product Image -->
+        <div class="flex items-center justify-center lg:w-1/2">
+          {
+            imageUrl ? (
+              <Image
+                src={imageUrl}
+                alt={product.name}
+                class="h-auto max-h-[500px] w-auto object-contain"
+                inferSize
+              />
+            ) : (
+              <div class="flex h-[400px] w-full items-center justify-center bg-gray-100">
+                <span class="text-gray-400">Imagine indisponibilă</span>
+              </div>
+            )
+          }
+        </div>
+
+        <!-- Product Details -->
+        <div class="flex flex-col gap-6 lg:w-1/2 lg:justify-center">
+          <h1 class="text-3xl font-bold lg:text-5xl">{product.name}</h1>
+          {
+            product.description && (
+              <p class="text-lg leading-relaxed text-gray-600">{product.description}</p>
+            )
+          }
+          <div class="flex flex-col gap-1">
+            <p class="text-2xl font-bold">
+              {product.price.toFixed(2).replace('.', ',')} lei
+            </p>
+            <p class="text-xs text-gray-400">
+              Garanție SGR: {SGR_DEPOSIT.toFixed(2).replace('.', ',')} lei
+            </p>
+          </div>
+          <AddToCartButton
+            client:load
+            productId={product._id}
+            productName={product.name}
+            productPrice={product.price}
+            itemType={itemType}
+            image={cartImageUrl}
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
