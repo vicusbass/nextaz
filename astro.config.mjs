@@ -12,7 +12,7 @@ import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://nextaz.ro',
+  site: 'https://www.nextaz.ro',
 
   vite: {
     plugins: [tailwindcss()],
@@ -32,11 +32,11 @@ export default defineConfig({
     sitemap({
       filter: (page) =>
         ![
-          'https://nextaz.ro/cart/',
-          'https://nextaz.ro/checkout/',
-          'https://nextaz.ro/payment/failure/',
-          'https://nextaz.ro/payment/success/',
-          'https://nextaz.ro/setari-cookies/',
+          'https://www.nextaz.ro/cart/',
+          'https://www.nextaz.ro/checkout/',
+          'https://www.nextaz.ro/payment/failure/',
+          'https://www.nextaz.ro/payment/success/',
+          'https://www.nextaz.ro/setari-cookies/',
         ].includes(page),
     }),
   ],
