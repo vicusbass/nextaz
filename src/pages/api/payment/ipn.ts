@@ -4,7 +4,7 @@ export const prerender = false;
 
 import { updateOrderPaymentStatus, getOrderByNumber } from '../../../lib/supabase';
 import { verifyIPN, isNetopiaConfigured, type IPNPayload } from '../../../lib/netopia';
-import { sendOrderConfirmationEmails } from '../../../lib/email';
+import { sendOrderConfirmationEmails, sendDbFailureAlert } from '../../../lib/email';
 import type { Database } from '../../../lib/database.types';
 
 type OrderStatus = Database['public']['Enums']['order_status'];
@@ -132,12 +132,15 @@ export const POST: APIRoute = async ({ request }) => {
     );
 
     // Update order in database (Supabase)
+    let dbUpdateSucceeded = false;
+    let dbError: string | null = null;
     try {
       await updateOrderPaymentStatus(orderNumber, orderStatus, {
         paymentStatus,
         paymentReference: netopiaId,
         paidAt: paymentStatus === 'paid' ? new Date().toISOString() : undefined,
       });
+      dbUpdateSucceeded = true;
       console.log(
         JSON.stringify({
           event: 'ipn_order_updated',
@@ -146,47 +149,81 @@ export const POST: APIRoute = async ({ request }) => {
           paymentStatus,
         })
       );
-    } catch (dbError) {
+    } catch (error) {
+      dbError = error instanceof Error ? error.message : 'Unknown error';
       console.error(
         JSON.stringify({
           event: 'ipn_db_error',
           order: orderNumber,
-          error: dbError instanceof Error ? dbError.message : 'Unknown error',
+          error: dbError,
         })
       );
-      // Don't fail the IPN response - Netopia needs confirmation
     }
 
-    // Send confirmation emails if payment succeeded
     if (paymentStatus === 'paid') {
-      try {
-        const order = await getOrderByNumber(orderNumber);
-        if (order) {
-          const emailResults = await sendOrderConfirmationEmails(order);
-          console.log(
+      if (dbUpdateSucceeded) {
+        // Happy path: DB is up, send full confirmation emails with order details
+        try {
+          const order = await getOrderByNumber(orderNumber);
+          if (order) {
+            const emailResults = await sendOrderConfirmationEmails(order);
+            console.log(
+              JSON.stringify({
+                event: 'ipn_emails_sent',
+                order: orderNumber,
+                customer: emailResults.customerEmail.success,
+                admin: emailResults.adminEmail.success,
+              })
+            );
+          } else {
+            console.error(JSON.stringify({ event: 'ipn_order_not_found', order: orderNumber }));
+          }
+        } catch (emailError) {
+          console.error(
             JSON.stringify({
-              event: 'ipn_emails_sent',
+              event: 'ipn_email_error',
               order: orderNumber,
-              customer: emailResults.customerEmail.success,
-              admin: emailResults.adminEmail.success,
+              error: emailError instanceof Error ? emailError.message : 'Unknown error',
             })
           );
-        } else {
-          console.error(JSON.stringify({ event: 'ipn_order_not_found', order: orderNumber }));
         }
-      } catch (emailError) {
-        console.error(
-          JSON.stringify({
-            event: 'ipn_email_error',
-            order: orderNumber,
-            error: emailError instanceof Error ? emailError.message : 'Unknown error',
-          })
-        );
+      } else {
+        // DB is down: send urgent alert to admin with IPN payload data so the order isn't lost
+        try {
+          const alertResult = await sendDbFailureAlert({
+            orderNumber,
+            paymentStatus,
+            netopiaId: netopiaId || 'N/A',
+            amount: payload.payment?.amount ?? payload.order?.amount ?? 0,
+            currency: payload.payment?.currency ?? payload.order?.currency ?? 'RON',
+            customerEmail: payload.order?.billing?.email || 'N/A',
+            customerName:
+              `${payload.order?.billing?.firstName || ''} ${payload.order?.billing?.lastName || ''}`.trim() ||
+              'N/A',
+            customerPhone: payload.order?.billing?.phone || 'N/A',
+            error: dbError || 'Unknown database error',
+          });
+          console.log(
+            JSON.stringify({
+              event: 'ipn_db_failure_alert',
+              order: orderNumber,
+              alertSent: alertResult.success,
+            })
+          );
+        } catch (alertError) {
+          console.error(
+            JSON.stringify({
+              event: 'ipn_db_failure_alert_error',
+              order: orderNumber,
+              error: alertError instanceof Error ? alertError.message : 'Unknown error',
+            })
+          );
+        }
       }
     }
 
-    // Return success response to Netopia
-    // Netopia expects this specific response format
+    // Always return success to Netopia so the payment is processed.
+    // If the DB was down, the admin has been notified by email to handle it manually.
     return jsonResponse({
       errorType: 0,
       errorCode: '',
