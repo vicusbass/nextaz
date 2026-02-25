@@ -424,7 +424,7 @@ export const POST: APIRoute = async ({ request }) => {
 
     // Build customer data for Netopia
     // Always use the configured site URL for callback URLs to avoid Vercel deployment URL redirects
-    const siteUrl = import.meta.env.SITE || 'https://nextaz.ro';
+    const siteUrl = import.meta.env.SITE || 'https://www.nextaz.ro';
     const origin = siteUrl.replace(/\/$/, '');
     let firstName: string;
     let lastName: string;
