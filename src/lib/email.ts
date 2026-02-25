@@ -331,3 +331,96 @@ export async function sendOrderConfirmationEmails(order: Order): Promise<{
     adminEmail: adminResult,
   };
 }
+
+/**
+ * Send an urgent alert email to admin when a critical IPN processing failure occurs
+ * (e.g. database is down). Uses plain HTML instead of templates so it works
+ * independently of any other system.
+ */
+export async function sendDbFailureAlert(details: {
+  orderNumber: string;
+  paymentStatus: string;
+  netopiaId: string;
+  amount: number;
+  currency: string;
+  customerEmail: string;
+  customerName: string;
+  customerPhone: string;
+  error: string;
+}): Promise<{ success: boolean; error?: string }> {
+  try {
+    const { error } = await resend.emails.send({
+      from: FROM_EMAIL,
+      to: [ADMIN_EMAIL],
+      subject: `⚠️ URGENT: Plată primită dar baza de date nu funcționează — Comanda #${details.orderNumber}`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="background: #dc2626; color: white; padding: 16px 24px; border-radius: 8px 8px 0 0;">
+            <h2 style="margin: 0;">⚠️ Alertă: Baza de date indisponibilă</h2>
+          </div>
+          <div style="border: 1px solid #e5e7eb; border-top: none; padding: 24px; border-radius: 0 0 8px 8px;">
+            <p style="color: #dc2626; font-weight: 600;">
+              O plată a fost confirmată de Netopia, dar baza de date (Supabase) nu a putut fi actualizată.
+              Comanda trebuie procesată manual.
+            </p>
+
+            <h3 style="border-bottom: 1px solid #e5e7eb; padding-bottom: 8px;">Detalii comandă</h3>
+            <table style="width: 100%; border-collapse: collapse;">
+              <tr><td style="padding: 6px 0; color: #6b7280;">Număr comandă:</td><td style="padding: 6px 0; font-weight: 600;">${details.orderNumber}</td></tr>
+              <tr><td style="padding: 6px 0; color: #6b7280;">Status plată:</td><td style="padding: 6px 0; font-weight: 600;">${details.paymentStatus}</td></tr>
+              <tr><td style="padding: 6px 0; color: #6b7280;">Netopia ID:</td><td style="padding: 6px 0;">${details.netopiaId}</td></tr>
+              <tr><td style="padding: 6px 0; color: #6b7280;">Sumă:</td><td style="padding: 6px 0; font-weight: 600;">${details.amount} ${details.currency}</td></tr>
+            </table>
+
+            <h3 style="border-bottom: 1px solid #e5e7eb; padding-bottom: 8px;">Detalii client</h3>
+            <table style="width: 100%; border-collapse: collapse;">
+              <tr><td style="padding: 6px 0; color: #6b7280;">Nume:</td><td style="padding: 6px 0;">${details.customerName}</td></tr>
+              <tr><td style="padding: 6px 0; color: #6b7280;">Email:</td><td style="padding: 6px 0;">${details.customerEmail}</td></tr>
+              <tr><td style="padding: 6px 0; color: #6b7280;">Telefon:</td><td style="padding: 6px 0;">${details.customerPhone}</td></tr>
+            </table>
+
+            <h3 style="border-bottom: 1px solid #e5e7eb; padding-bottom: 8px;">Eroare tehnică</h3>
+            <pre style="background: #f9fafb; padding: 12px; border-radius: 4px; overflow-x: auto; font-size: 13px;">${details.error}</pre>
+
+            <h3 style="border-bottom: 1px solid #e5e7eb; padding-bottom: 8px;">Acțiuni necesare</h3>
+            <ol style="color: #374151;">
+              <li>Verifică și reactivează Supabase: <a href="https://supabase.com/dashboard">supabase.com/dashboard</a></li>
+              <li>Actualizează manual statusul comenzii la <strong>confirmed</strong></li>
+              <li>Contactează clientul pentru confirmare</li>
+            </ol>
+          </div>
+        </div>
+      `,
+    });
+
+    if (error) {
+      console.error(
+        JSON.stringify({
+          event: 'db_failure_alert_send_failed',
+          order: details.orderNumber,
+          error: error.message,
+        })
+      );
+      return { success: false, error: error.message };
+    }
+
+    console.log(
+      JSON.stringify({
+        event: 'db_failure_alert_sent',
+        order: details.orderNumber,
+        to: ADMIN_EMAIL,
+      })
+    );
+    return { success: true };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    console.error(
+      JSON.stringify({
+        event: 'db_failure_alert_error',
+        order: details.orderNumber,
+        error: message,
+      })
+    );
+    return { success: false, error: message };
+  }
+}

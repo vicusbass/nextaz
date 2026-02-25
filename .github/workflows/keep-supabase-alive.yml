@@ -1,8 +1,16 @@
 name: Keep Supabase alive
 
+# IMPORTANT: GitHub auto-disables scheduled workflows after 60 days of repo inactivity
+# (no commits, issues, or PRs). If the shop has a period of no code changes, this workflow
+# will silently stop running and Supabase will pause. When that happens:
+# 1. Go to the Actions tab → "Keep Supabase alive" → click "Enable workflow"
+# 2. Manually trigger a run via "Run workflow" button
+# Consider setting up an external cron service (e.g. cron-job.org) as a backup ping.
+
 on:
   schedule:
-    # Run every 3 days at midnight UTC
+    # Run every 3 days at midnight UTC.
+    # Supabase free tier pauses after 7 days of inactivity, so 3-day interval gives margin.
     - cron: '0 0 */3 * *'
   workflow_dispatch: # Allow manual trigger
 
@@ -10,16 +18,28 @@ jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
-      - name: Ping Supabase
+      - name: Query Supabase database
         run: |
-          response=$(curl -s -o /dev/null -w "%{http_code}" \
-            "${{ secrets.SUPABASE_URL }}/rest/v1/" \
+          if [ -z "${{ secrets.SUPABASE_URL }}" ] || [ -z "${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" ]; then
+            echo "::error::SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY secret is not set!"
+            exit 1
+          fi
+
+          # Run an actual database query (not just the REST root endpoint).
+          # Supabase tracks real DB queries as "activity" for pause detection,
+          # but may ignore metadata-only REST API hits.
+          response=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 \
+            "${{ secrets.SUPABASE_URL }}/rest/v1/orders?select=id&limit=1" \
             -H "apikey: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
             -H "Authorization: Bearer ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}")
-          echo "Supabase response: $response"
+          echo "Supabase query response: $response"
+
           if [ "$response" -ge 200 ] && [ "$response" -lt 400 ]; then
-            echo "Supabase is alive"
+            echo "✓ Supabase is alive (HTTP $response)"
+          elif [ "$response" -eq 000 ]; then
+            echo "::error::Could not reach Supabase (connection failed). Project may be paused — resume it at https://supabase.com/dashboard"
+            exit 1
           else
-            echo "::warning::Supabase returned HTTP $response — project may be paused"
+            echo "::error::Supabase returned HTTP $response — project may be paused! Resume at https://supabase.com/dashboard"
             exit 1
           fi
