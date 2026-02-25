@@ -414,7 +414,7 @@ export interface IPNPayload {
  * Verify IPN signature from Netopia.
  * Returns true if valid, false otherwise.
  */
-export async function verifyIPN(verifyToken: string, ipnData: IPNPayload): Promise<boolean> {
+export async function verifyIPN(verifyToken: string, rawBody: string): Promise<boolean> {
   try {
     const config = getNetopiaConfig();
 
@@ -435,9 +435,8 @@ export async function verifyIPN(verifyToken: string, ipnData: IPNPayload): Promi
       return true; // Allow in development without public key
     }
 
-    // The SDK verify method takes (verifyToken, ipnDataAsJsonString) and returns Promise<IpnVerifyResponse>
-    const ipnJsonString = JSON.stringify(ipnData);
-    const result = await ipnVerifier.verify(verifyToken, ipnJsonString);
+    // Use the raw body string directly — re-stringifying parsed JSON changes formatting and breaks the signature
+    const result = await ipnVerifier.verify(verifyToken, rawBody);
     console.log(
       JSON.stringify({
         event: 'ipn_verify_result',

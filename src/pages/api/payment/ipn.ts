@@ -88,7 +88,7 @@ export const POST: APIRoute = async ({ request }) => {
 
     // Verify IPN signature if Netopia is configured and token is present
     if (isNetopiaConfigured() && verifyToken) {
-      const isValid = await verifyIPN(verifyToken, payload);
+      const isValid = await verifyIPN(verifyToken, bodyText);
       if (!isValid) {
         console.error(
           JSON.stringify({ event: 'ipn_verification_failed', order: payload.order?.orderID })
