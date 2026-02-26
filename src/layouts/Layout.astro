@@ -121,7 +121,6 @@ const siteName = 'Nextaz';
     />
 
     <slot name="head" />
-    <Analytics />
     <ClientRouter />
   </head>
   <body class="flex min-h-screen flex-col">
@@ -133,7 +132,7 @@ const siteName = 'Nextaz';
     <Footer transition:persist />
     <Toast client:load transition:persist />
     <SpeedInsights />
-
+    <Analytics />
     <!-- Age Verification Modal -->
     <div
       id="age-verification-modal"
