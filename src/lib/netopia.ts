@@ -66,8 +66,8 @@ export function createIpnVerifier(config: NetopiaConfig) {
     posSignature: config.posSignature,
     posSignatureSet: [config.posSignature],
     publicKeyStr: config.publicKey,
-    hashMethod: 'sha256',
-    alg: 'RS256',
+    hashMethod: 'sha512',
+    alg: 'RS512',
   });
 }
 
