@@ -4,6 +4,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Toast from '../components/cart/Toast.svelte';
 import { ClientRouter } from 'astro:transitions';
+import Analytics from '@vercel/analytics/astro';
 import SpeedInsights from '@vercel/speed-insights/astro';
 import '@fontsource-variable/red-hat-display';
 import ContactForm from '../components/ContactForm.astro';
@@ -120,6 +121,7 @@ const siteName = 'Nextaz';
     />
 
     <slot name="head" />
+    <Analytics />
     <ClientRouter />
   </head>
   <body class="flex min-h-screen flex-col">
