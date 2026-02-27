@@ -7,7 +7,6 @@ import { ClientRouter } from 'astro:transitions';
 import Analytics from '@vercel/analytics/astro';
 import SpeedInsights from '@vercel/speed-insights/astro';
 import '@fontsource-variable/red-hat-display';
-import latinFont from '@fontsource-variable/red-hat-display/files/red-hat-display-latin-wght-normal.woff2?url';
 import ContactForm from '../components/ContactForm.astro';
 
 interface Props {
@@ -93,9 +92,6 @@ const siteName = 'Nextaz';
     <link rel="dns-prefetch" href="https://cdn.sanity.io" />
     <link rel="preconnect" href="https://stream.mux.com" crossorigin />
     <link rel="preconnect" href="https://inferred.litix.io" crossorigin />
-
-    <!-- Font preloads -->
-    <link rel="preload" href={latinFont} as="font" type="font/woff2" crossorigin />
 
     <!-- JSON-LD Structured Data -->
     <script
