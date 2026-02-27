@@ -7,6 +7,8 @@ import { ClientRouter } from 'astro:transitions';
 import Analytics from '@vercel/analytics/astro';
 import SpeedInsights from '@vercel/speed-insights/astro';
 import '@fontsource-variable/red-hat-display';
+import latinFont from '@fontsource-variable/red-hat-display/files/red-hat-display-latin-wght-normal.woff2?url';
+import latinExtFont from '@fontsource-variable/red-hat-display/files/red-hat-display-latin-ext-wght-normal.woff2?url';
 import ContactForm from '../components/ContactForm.astro';
 
 interface Props {
@@ -90,6 +92,12 @@ const siteName = 'Nextaz';
     <!-- Preconnect for performance -->
     <link rel="preconnect" href="https://cdn.sanity.io" crossorigin />
     <link rel="dns-prefetch" href="https://cdn.sanity.io" />
+    <link rel="preconnect" href="https://stream.mux.com" crossorigin />
+    <link rel="preconnect" href="https://inferred.litix.io" crossorigin />
+
+    <!-- Font preloads -->
+    <link rel="preload" href={latinFont} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={latinExtFont} as="font" type="font/woff2" crossorigin />
 
     <!-- JSON-LD Structured Data -->
     <script
@@ -130,7 +138,7 @@ const siteName = 'Nextaz';
     </main>
     <ContactForm />
     <Footer transition:persist />
-    <Toast client:load transition:persist />
+    <Toast client:idle transition:persist />
     <SpeedInsights />
     <Analytics />
     <!-- Age Verification Modal -->

@@ -35,7 +35,7 @@ const currentPath = Astro.url.pathname;
     >
     <a href="/cart" class="nav-link relative h-6 w-auto" aria-label="Coș de cumpărături">
       <Cart />
-      <CartBadge client:load />
+      <CartBadge client:idle />
     </a>
   </nav>
 
@@ -43,7 +43,7 @@ const currentPath = Astro.url.pathname;
   <div class="flex items-center gap-6 lg:hidden">
     <a href="/cart" class="relative" aria-label="Coș de cumpărături">
       <Cart class="h-6" />
-      <CartBadge client:load />
+      <CartBadge client:idle />
     </a>
     <div class="h-8 w-8"></div>
   </div>
