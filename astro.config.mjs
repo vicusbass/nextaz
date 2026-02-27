@@ -3,8 +3,6 @@ import { defineConfig } from 'astro/config';
 
 import tailwindcss from '@tailwindcss/vite';
 
-import sanity from '@sanity/astro';
-import react from '@astrojs/react';
 import svelte from '@astrojs/svelte';
 
 import vercel from '@astrojs/vercel';
@@ -22,12 +20,6 @@ export default defineConfig({
   },
 
   integrations: [
-    sanity({
-      projectId: '5fmpwxu0',
-      dataset: 'production',
-      useCdn: false,
-    }),
-    react(),
     svelte(),
     sitemap({
       filter: (page) =>

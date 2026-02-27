@@ -1,7 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
-import { MuxPlayer } from '@mux/mux-player-astro';
+
 import Layout from '../layouts/Layout.astro';
 import allWines from '../assets/all-wines.png';
 import allWinesMobile from '../assets/all-wines-mobile.png';
@@ -74,23 +74,19 @@ const wines: Wine[] = wineEntries
           class="h-[36vw] max-h-175 min-h-88 w-[25vw] max-w-105 min-w-53 lg:min-h-116 lg:min-w-70"
           style="clip-path: polygon(0 0, 100% 50%, 0 100%);"
         >
-          <MuxPlayer
-            disableCookies
-            playbackId="HjiJrWEuFT95bsSTMhW8NDP8Zad4gszfcYcUHOUSLzk"
-            metadata={{ video_title: 'wine bubbles' }}
-            streamType="on-demand"
-            maxResolution="720p"
+          <mux-player
+            disable-cookies
+            playback-id="HjiJrWEuFT95bsSTMhW8NDP8Zad4gszfcYcUHOUSLzk"
+            metadata-video-title="wine bubbles"
+            stream-type="on-demand"
+            max-resolution="720p"
             autoplay
             muted
             loop
             nohotkeys
             class="h-full w-full"
-            style={{
-              '--controls': 'none',
-              '--media-object-fit': 'cover',
-              '--media-object-position': 'center',
-            }}
-          />
+            style="--controls: none; --media-object-fit: cover; --media-object-position: center;"
+          ></mux-player>
         </div>
         <div
           class="h-[36vw] max-h-175 min-h-88 w-[9vw] max-w-45 min-w-23 bg-black lg:min-h-116 lg:min-w-31"
@@ -376,8 +372,31 @@ const wines: Wine[] = wineEntries
     });
   }
 
+  function initLazyMuxPlayer() {
+    const player = document.querySelector('mux-player');
+    if (!player) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const script = document.createElement('script');
+            script.type = 'module';
+            script.src = 'https://cdn.jsdelivr.net/npm/@mux/mux-player@3/dist/mux-player.mjs';
+            document.head.appendChild(script);
+            observer.disconnect();
+          }
+        });
+      },
+      { rootMargin: '200px' }
+    );
+
+    observer.observe(player);
+  }
+
   document.addEventListener('astro:page-load', () => {
     revealModal();
     initWineCells();
+    initLazyMuxPlayer();
   });
 </script>
