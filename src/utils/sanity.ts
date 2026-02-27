@@ -1,26 +1,17 @@
-import { sanityClient } from 'sanity:client';
+import { createClient } from '@sanity/client';
 import { createImageUrlBuilder, type SanityImageSource } from '@sanity/image-url';
 
-export const client = sanityClient;
+const projectId = '5fmpwxu0';
+const dataset = 'production';
 
-const clientConfig = sanityClient.config();
-const projectId = clientConfig.projectId;
-const dataset = clientConfig.dataset;
+export const client = createClient({
+  projectId,
+  dataset,
+  useCdn: false,
+  apiVersion: '2024-01-01',
+});
 
-let builder: ReturnType<typeof createImageUrlBuilder> | null = null;
-
-if (projectId && dataset) {
-  builder = createImageUrlBuilder({ projectId, dataset });
-} else {
-  console.warn(
-    'Sanity `projectId` or `dataset` not found in `sanityClient` configuration. ' +
-      'This is usually configured in `astro.config.mjs` via the Sanity integration ' +
-      'and relies on environment variables (e.g., SANITY_STUDIO_PROJECT_ID). ' +
-      'Image URLs will not be generated. ' +
-      'Current config from sanityClient:',
-    clientConfig
-  );
-}
+const builder = createImageUrlBuilder({ projectId, dataset });
 
 export function urlFor(source: SanityImageSource | null | undefined) {
   if (!source || !builder) {

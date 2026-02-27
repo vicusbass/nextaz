@@ -1,5 +1,6 @@
-import { type QueryParams } from 'sanity';
-import { sanityClient } from 'sanity:client';
+import type { QueryParams } from '@sanity/client';
+import { client } from './sanity';
+
 export async function loadQuery<QueryResponse>({
   query,
   params,
@@ -7,7 +8,7 @@ export async function loadQuery<QueryResponse>({
   query: string;
   params?: QueryParams;
 }) {
-  const { result } = await sanityClient.fetch<QueryResponse>(query, params ?? {}, {
+  const { result } = await client.fetch<QueryResponse>(query, params ?? {}, {
     filterResponse: false,
   });
   return {

@@ -380,7 +380,10 @@ const wines: Wine[] = wineEntries
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            import('@mux/mux-player');
+            const script = document.createElement('script');
+            script.type = 'module';
+            script.src = 'https://cdn.jsdelivr.net/npm/@mux/mux-player@3/dist/mux-player.mjs';
+            document.head.appendChild(script);
             observer.disconnect();
           }
         });
