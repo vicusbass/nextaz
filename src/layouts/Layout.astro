@@ -8,7 +8,6 @@ import Analytics from '@vercel/analytics/astro';
 import SpeedInsights from '@vercel/speed-insights/astro';
 import '@fontsource-variable/red-hat-display';
 import latinFont from '@fontsource-variable/red-hat-display/files/red-hat-display-latin-wght-normal.woff2?url';
-import latinExtFont from '@fontsource-variable/red-hat-display/files/red-hat-display-latin-ext-wght-normal.woff2?url';
 import ContactForm from '../components/ContactForm.astro';
 
 interface Props {
@@ -97,7 +96,6 @@ const siteName = 'Nextaz';
 
     <!-- Font preloads -->
     <link rel="preload" href={latinFont} as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href={latinExtFont} as="font" type="font/woff2" crossorigin />
 
     <!-- JSON-LD Structured Data -->
     <script
