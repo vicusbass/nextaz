@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { log } from '../../../lib/logger';
 
 export const prerender = false;
 
@@ -110,12 +111,11 @@ export const POST: APIRoute = async ({ request }) => {
       { status: 200, headers: { 'Content-Type': 'application/json' } }
     );
   } catch (error) {
-    console.error(
-      JSON.stringify({
-        event: 'cart_validation_error',
-        error: error instanceof Error ? error.message : 'Unknown error',
-      })
-    );
+    log.error({
+      event: 'cart_validation_error',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+    await log.flush();
     return new Response(
       JSON.stringify({
         success: false,

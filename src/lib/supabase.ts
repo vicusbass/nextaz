@@ -1,11 +1,12 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database, OrderInsert, OrderUpdate, OrderItem } from './database.types';
+import { log } from './logger';
 
 const supabaseUrl = import.meta.env.SUPABASE_URL;
 const supabaseServiceRoleKey = import.meta.env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!supabaseUrl || !supabaseServiceRoleKey) {
-  console.warn(JSON.stringify({ event: 'supabase_config', warning: 'credentials_missing' }));
+  log.warn({ event: 'supabase_config', warning: 'credentials_missing' });
 }
 
 // Use service role key for server-side operations (bypasses RLS)
@@ -118,9 +119,7 @@ export async function createOrder(
     .single();
 
   if (error) {
-    console.error(
-      JSON.stringify({ event: 'db_error', operation: 'create_order', error: error.message })
-    );
+    log.error({ event: 'db_error', operation: 'create_order', error: error.message });
     throw new Error(`Failed to create order: ${error.message}`);
   }
 
@@ -149,14 +148,12 @@ export async function updateOrderPaymentStatus(
     .eq('order_number', orderNumber);
 
   if (error) {
-    console.error(
-      JSON.stringify({
-        event: 'db_error',
-        operation: 'update_order_status',
-        order: orderNumber,
-        error: error.message,
-      })
-    );
+    log.error({
+      event: 'db_error',
+      operation: 'update_order_status',
+      order: orderNumber,
+      error: error.message,
+    });
     throw new Error(`Failed to update order: ${error.message}`);
   }
 
@@ -185,14 +182,12 @@ export async function updateOrderShipping(
     .eq('order_number', orderNumber);
 
   if (error) {
-    console.error(
-      JSON.stringify({
-        event: 'db_error',
-        operation: 'update_shipping',
-        order: orderNumber,
-        error: error.message,
-      })
-    );
+    log.error({
+      event: 'db_error',
+      operation: 'update_shipping',
+      order: orderNumber,
+      error: error.message,
+    });
     throw new Error(`Failed to update shipping: ${error.message}`);
   }
 
@@ -213,14 +208,12 @@ export async function updateOrderPaymentReference(
     .eq('order_number', orderNumber);
 
   if (error) {
-    console.error(
-      JSON.stringify({
-        event: 'db_error',
-        operation: 'update_payment_ref',
-        order: orderNumber,
-        error: error.message,
-      })
-    );
+    log.error({
+      event: 'db_error',
+      operation: 'update_payment_ref',
+      order: orderNumber,
+      error: error.message,
+    });
     throw new Error(`Failed to update payment reference: ${error.message}`);
   }
 
@@ -235,14 +228,12 @@ export async function getOrderByNumber(orderNumber: string) {
     .single();
 
   if (error) {
-    console.error(
-      JSON.stringify({
-        event: 'db_error',
-        operation: 'get_order_by_number',
-        order: orderNumber,
-        error: error.message,
-      })
-    );
+    log.error({
+      event: 'db_error',
+      operation: 'get_order_by_number',
+      order: orderNumber,
+      error: error.message,
+    });
     return null;
   }
 
@@ -253,14 +244,12 @@ export async function getOrderById(orderId: string) {
   const { data, error } = await supabase.from('orders').select('*').eq('id', orderId).single();
 
   if (error) {
-    console.error(
-      JSON.stringify({
-        event: 'db_error',
-        operation: 'get_order_by_id',
-        orderId,
-        error: error.message,
-      })
-    );
+    log.error({
+      event: 'db_error',
+      operation: 'get_order_by_id',
+      orderId,
+      error: error.message,
+    });
     return null;
   }
 

@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { log } from '../../../lib/logger';
 
 export const prerender = false;
 
@@ -49,7 +50,7 @@ function jsonResponse(data: object, status = 200) {
 }
 
 export const POST: APIRoute = async ({ request }) => {
-  console.log(JSON.stringify({ event: 'ipn_received' }));
+  log.info({ event: 'ipn_received' });
 
   try {
     // Get verification token from header (Netopia v2)
@@ -62,7 +63,8 @@ export const POST: APIRoute = async ({ request }) => {
     // Clone request to read body as text first for debugging
     const bodyText = await request.text();
     if (!bodyText) {
-      console.error(JSON.stringify({ event: 'ipn_error', error: 'empty_body' }));
+      log.error({ event: 'ipn_error', error: 'empty_body' });
+      await log.flush();
       return jsonResponse(
         { errorType: 1, errorCode: 'EMPTY_BODY', errorMessage: 'Empty request body' },
         400
@@ -77,14 +79,12 @@ export const POST: APIRoute = async ({ request }) => {
       payload = JSON.parse(params.get('data') || '{}');
     }
 
-    console.log(
-      JSON.stringify({
-        event: 'ipn_parsed',
-        order: payload.order?.orderID,
-        netopiaStatus: payload.payment?.status,
-        hasVerifyToken: !!verifyToken,
-      })
-    );
+    log.info({
+      event: 'ipn_parsed',
+      order: payload.order?.orderID,
+      netopiaStatus: payload.payment?.status,
+      hasVerifyToken: !!verifyToken,
+    });
 
     // Verify IPN signature if Netopia is configured and token is present
     // Verification failure logs a warning but does NOT block processing —
@@ -93,18 +93,16 @@ export const POST: APIRoute = async ({ request }) => {
     if (isNetopiaConfigured() && verifyToken) {
       const isValid = await verifyIPN(verifyToken, bodyText);
       if (!isValid) {
-        console.warn(
-          JSON.stringify({
-            event: 'ipn_verification_failed',
-            order: payload.order?.orderID,
-            warning: 'Continuing despite failed signature — check NETOPIA_PUBLIC_KEY',
-          })
-        );
+        log.warn({
+          event: 'ipn_verification_failed',
+          order: payload.order?.orderID,
+          warning: 'Continuing despite failed signature — check NETOPIA_PUBLIC_KEY',
+        });
       } else {
-        console.log(JSON.stringify({ event: 'ipn_verified', order: payload.order?.orderID }));
+        log.info({ event: 'ipn_verified', order: payload.order?.orderID });
       }
     } else if (isNetopiaConfigured() && !verifyToken) {
-      console.warn(JSON.stringify({ event: 'ipn_no_verify_token', order: payload.order?.orderID }));
+      log.warn({ event: 'ipn_no_verify_token', order: payload.order?.orderID });
       // Continue processing - some Netopia configurations may not send token
     }
 
@@ -115,7 +113,8 @@ export const POST: APIRoute = async ({ request }) => {
     const netopiaStatus = payload.payment?.status;
 
     if (!orderNumber) {
-      console.error(JSON.stringify({ event: 'ipn_error', error: 'missing_order_id' }));
+      log.error({ event: 'ipn_error', error: 'missing_order_id' });
+      await log.flush();
       return jsonResponse(
         { errorType: 1, errorCode: 'MISSING_ORDER', errorMessage: 'Missing orderID' },
         400
@@ -125,15 +124,13 @@ export const POST: APIRoute = async ({ request }) => {
     // Map Netopia status to our order status
     const { orderStatus, paymentStatus } = mapNetopiaStatusToOrderStatus(netopiaStatus);
 
-    console.log(
-      JSON.stringify({
-        event: 'ipn_status_mapped',
-        order: orderNumber,
-        netopiaStatus,
-        orderStatus,
-        paymentStatus,
-      })
-    );
+    log.info({
+      event: 'ipn_status_mapped',
+      order: orderNumber,
+      netopiaStatus,
+      orderStatus,
+      paymentStatus,
+    });
 
     // Update order in database (Supabase)
     let dbUpdateSucceeded = false;
@@ -145,23 +142,19 @@ export const POST: APIRoute = async ({ request }) => {
         paidAt: paymentStatus === 'paid' ? new Date().toISOString() : undefined,
       });
       dbUpdateSucceeded = true;
-      console.log(
-        JSON.stringify({
-          event: 'ipn_order_updated',
-          order: orderNumber,
-          orderStatus,
-          paymentStatus,
-        })
-      );
+      log.info({
+        event: 'ipn_order_updated',
+        order: orderNumber,
+        orderStatus,
+        paymentStatus,
+      });
     } catch (error) {
       dbError = error instanceof Error ? error.message : 'Unknown error';
-      console.error(
-        JSON.stringify({
-          event: 'ipn_db_error',
-          order: orderNumber,
-          error: dbError,
-        })
-      );
+      log.error({
+        event: 'ipn_db_error',
+        order: orderNumber,
+        error: dbError,
+      });
     }
 
     if (paymentStatus === 'paid') {
@@ -171,25 +164,21 @@ export const POST: APIRoute = async ({ request }) => {
           const order = await getOrderByNumber(orderNumber);
           if (order) {
             const emailResults = await sendOrderConfirmationEmails(order);
-            console.log(
-              JSON.stringify({
-                event: 'ipn_emails_sent',
-                order: orderNumber,
-                customer: emailResults.customerEmail.success,
-                admin: emailResults.adminEmail.success,
-              })
-            );
+            log.info({
+              event: 'ipn_emails_sent',
+              order: orderNumber,
+              customer: emailResults.customerEmail.success,
+              admin: emailResults.adminEmail.success,
+            });
           } else {
-            console.error(JSON.stringify({ event: 'ipn_order_not_found', order: orderNumber }));
+            log.error({ event: 'ipn_order_not_found', order: orderNumber });
           }
         } catch (emailError) {
-          console.error(
-            JSON.stringify({
-              event: 'ipn_email_error',
-              order: orderNumber,
-              error: emailError instanceof Error ? emailError.message : 'Unknown error',
-            })
-          );
+          log.error({
+            event: 'ipn_email_error',
+            order: orderNumber,
+            error: emailError instanceof Error ? emailError.message : 'Unknown error',
+          });
         }
       } else {
         // DB is down: send urgent alert to admin with IPN payload data so the order isn't lost
@@ -207,39 +196,35 @@ export const POST: APIRoute = async ({ request }) => {
             customerPhone: payload.order?.billing?.phone || 'N/A',
             error: dbError || 'Unknown database error',
           });
-          console.log(
-            JSON.stringify({
-              event: 'ipn_db_failure_alert',
-              order: orderNumber,
-              alertSent: alertResult.success,
-            })
-          );
+          log.info({
+            event: 'ipn_db_failure_alert',
+            order: orderNumber,
+            alertSent: alertResult.success,
+          });
         } catch (alertError) {
-          console.error(
-            JSON.stringify({
-              event: 'ipn_db_failure_alert_error',
-              order: orderNumber,
-              error: alertError instanceof Error ? alertError.message : 'Unknown error',
-            })
-          );
+          log.error({
+            event: 'ipn_db_failure_alert_error',
+            order: orderNumber,
+            error: alertError instanceof Error ? alertError.message : 'Unknown error',
+          });
         }
       }
     }
 
     // Always return success to Netopia so the payment is processed.
     // If the DB was down, the admin has been notified by email to handle it manually.
+    await log.flush();
     return jsonResponse({
       errorType: 0,
       errorCode: '',
       errorMessage: 'OK',
     });
   } catch (error) {
-    console.error(
-      JSON.stringify({
-        event: 'ipn_error',
-        error: error instanceof Error ? error.message : 'Unknown error',
-      })
-    );
+    log.error({
+      event: 'ipn_error',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+    await log.flush();
 
     // Return error response to Netopia
     return jsonResponse(

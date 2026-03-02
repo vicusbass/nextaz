@@ -7,6 +7,7 @@
  */
 
 import { Netopia, Ipn } from 'netopia-payment2';
+import { log } from './logger';
 
 // ============================================================================
 // Configuration
@@ -58,7 +59,7 @@ export function createNetopiaClient(config: NetopiaConfig) {
 
 export function createIpnVerifier(config: NetopiaConfig) {
   if (!config.publicKey) {
-    console.warn(JSON.stringify({ event: 'netopia_config', warning: 'public_key_missing' }));
+    log.warn({ event: 'netopia_config', warning: 'public_key_missing' });
     return null;
   }
 
@@ -299,18 +300,16 @@ export async function initiatePayment(params: {
     : 'https://secure-sandbox.netopia-payments.com';
   const url = `${baseUrl}/payment/card/start`;
 
-  console.log(
-    JSON.stringify({
-      event: 'netopia_payment_init',
-      order: orderData.orderID,
-      amount: orderData.amount,
-      currency: orderData.currency,
-      url,
-      isLive: config.isLive,
-      hasCompanyData: !!orderData.data,
-      orderData: JSON.stringify(orderData.data),
-    })
-  );
+  log.info({
+    event: 'netopia_payment_init',
+    order: orderData.orderID,
+    amount: orderData.amount,
+    currency: orderData.currency,
+    url,
+    isLive: config.isLive,
+    hasCompanyData: !!orderData.data,
+    orderData: JSON.stringify(orderData.data),
+  });
 
   try {
     const fetchResponse = await fetch(url, {
@@ -328,29 +327,25 @@ export async function initiatePayment(params: {
     try {
       data = JSON.parse(responseText);
     } catch {
-      console.error(
-        JSON.stringify({
-          event: 'netopia_non_json_response',
-          order: params.orderNumber,
-          httpStatus: fetchResponse.status,
-          responsePreview: responseText.substring(0, 500),
-        })
-      );
+      log.error({
+        event: 'netopia_non_json_response',
+        order: params.orderNumber,
+        httpStatus: fetchResponse.status,
+        responsePreview: responseText.substring(0, 500),
+      });
       return {
         success: false,
         error: `Netopia returned non-JSON response (HTTP ${fetchResponse.status})`,
       };
     }
 
-    console.log(
-      JSON.stringify({
-        event: 'netopia_response',
-        order: params.orderNumber,
-        httpStatus: fetchResponse.status,
-        hasPaymentUrl: !!data?.payment?.paymentURL,
-        rawResponse: JSON.stringify(data),
-      })
-    );
+    log.info({
+      event: 'netopia_response',
+      order: params.orderNumber,
+      httpStatus: fetchResponse.status,
+      hasPaymentUrl: !!data?.payment?.paymentURL,
+      rawResponse: JSON.stringify(data),
+    });
 
     if (fetchResponse.status === 200 && data?.payment?.paymentURL) {
       return {
@@ -365,13 +360,11 @@ export async function initiatePayment(params: {
       error: data?.message || `Netopia HTTP ${fetchResponse.status}`,
     };
   } catch (error) {
-    console.error(
-      JSON.stringify({
-        event: 'netopia_api_error',
-        order: params.orderNumber,
-        error: error instanceof Error ? error.message : 'Unknown error',
-      })
-    );
+    log.error({
+      event: 'netopia_api_error',
+      order: params.orderNumber,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown Netopia error',
@@ -420,54 +413,44 @@ export async function verifyIPN(verifyToken: string, rawBody: string): Promise<b
 
     // Check if public key is properly configured
     if (!config.publicKey || config.publicKey.includes('YOUR_KEY_HERE')) {
-      console.warn(
-        JSON.stringify({ event: 'ipn_verify_skipped', reason: 'public_key_not_configured' })
-      );
+      log.warn({ event: 'ipn_verify_skipped', reason: 'public_key_not_configured' });
       return true; // Allow without verification in development
     }
 
     const ipnVerifier = createIpnVerifier(config);
 
     if (!ipnVerifier) {
-      console.warn(
-        JSON.stringify({ event: 'ipn_verify_skipped', reason: 'verifier_creation_failed' })
-      );
+      log.warn({ event: 'ipn_verify_skipped', reason: 'verifier_creation_failed' });
       return true; // Allow in development without public key
     }
 
     // Use the raw body string directly — re-stringifying parsed JSON changes formatting and breaks the signature
     const result = await ipnVerifier.verify(verifyToken, rawBody);
-    console.log(
-      JSON.stringify({
-        event: 'ipn_verify_result',
-        errorType: result.errorType,
-        errorCode: result.errorCode,
-        errorMessage: result.errorMessage,
-      })
-    );
+    log.info({
+      event: 'ipn_verify_result',
+      errorType: result.errorType,
+      errorCode: result.errorCode,
+      errorMessage: result.errorMessage,
+    });
 
     // errorType 0 means success
     if (result.errorType === 0) {
       return true;
     }
 
-    console.error(
-      JSON.stringify({
-        event: 'ipn_verify_failed',
-        isLive: config.isLive,
-        errorType: result.errorType,
-        errorCode: result.errorCode,
-        errorMessage: result.errorMessage,
-      })
-    );
+    log.error({
+      event: 'ipn_verify_failed',
+      isLive: config.isLive,
+      errorType: result.errorType,
+      errorCode: result.errorCode,
+      errorMessage: result.errorMessage,
+    });
     return false;
   } catch (error) {
-    console.error(
-      JSON.stringify({
-        event: 'ipn_verify_error',
-        error: error instanceof Error ? error.message : 'Unknown error',
-      })
-    );
+    log.error({
+      event: 'ipn_verify_error',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
     return false;
   }
 }

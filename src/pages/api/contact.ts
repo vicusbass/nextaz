@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { Resend } from 'resend';
+import { log } from '../../lib/logger';
 
 export const prerender = false;
 
@@ -39,7 +40,8 @@ export const POST: APIRoute = async ({ request }) => {
     });
 
     if (error) {
-      console.error(JSON.stringify({ event: 'contact_send_failed', error: error.message }));
+      log.error({ event: 'contact_send_failed', error: error.message });
+      await log.flush();
       return new Response(JSON.stringify({ success: false, error: 'send_failed' }), {
         status: 500,
         headers: { 'Content-Type': 'application/json' },
@@ -51,12 +53,11 @@ export const POST: APIRoute = async ({ request }) => {
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    console.error(
-      JSON.stringify({
-        event: 'contact_error',
-        error: error instanceof Error ? error.message : 'Unknown error',
-      })
-    );
+    log.error({
+      event: 'contact_error',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+    await log.flush();
     return new Response(JSON.stringify({ success: false, error: 'server_error' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
