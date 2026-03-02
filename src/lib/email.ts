@@ -1,5 +1,6 @@
 import { Resend } from 'resend';
 import type { Order, OrderItem } from './database.types';
+import { log } from './logger';
 
 const resend = new Resend(import.meta.env.RESEND_API_KEY);
 
@@ -184,13 +185,11 @@ export async function sendCustomerOrderConfirmation(
   order: Order
 ): Promise<{ success: boolean; error?: string }> {
   if (!TEMPLATES.CUSTOMER_ORDER_CONFIRMATION) {
-    console.error(
-      JSON.stringify({
-        event: 'email_template_missing',
-        type: 'customer_confirmation',
-        env: 'RESEND_TEMPLATE_CUSTOMER_CONFIRMATION',
-      })
-    );
+    log.error({
+      event: 'email_template_missing',
+      type: 'customer_confirmation',
+      env: 'RESEND_TEMPLATE_CUSTOMER_CONFIRMATION',
+    });
     return { success: false, error: 'Template not configured' };
   }
 
@@ -208,39 +207,33 @@ export async function sendCustomerOrderConfirmation(
     });
 
     if (error) {
-      console.error(
-        JSON.stringify({
-          event: 'email_send_failed',
-          type: 'customer_confirmation',
-          order: order.order_number,
-          to: order.customer_email,
-          templateId: TEMPLATES.CUSTOMER_ORDER_CONFIRMATION,
-          error: error.message,
-        })
-      );
+      log.error({
+        event: 'email_send_failed',
+        type: 'customer_confirmation',
+        order: order.order_number,
+        to: order.customer_email,
+        templateId: TEMPLATES.CUSTOMER_ORDER_CONFIRMATION,
+        error: error.message,
+      });
       return { success: false, error: error.message };
     }
 
-    console.log(
-      JSON.stringify({
-        event: 'email_sent',
-        type: 'customer_confirmation',
-        order: order.order_number,
-        to: order.customer_email,
-      })
-    );
+    log.info({
+      event: 'email_sent',
+      type: 'customer_confirmation',
+      order: order.order_number,
+      to: order.customer_email,
+    });
     return { success: true };
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error';
-    console.error(
-      JSON.stringify({
-        event: 'email_error',
-        type: 'customer_confirmation',
-        order: order.order_number,
-        to: order.customer_email,
-        error: message,
-      })
-    );
+    log.error({
+      event: 'email_error',
+      type: 'customer_confirmation',
+      order: order.order_number,
+      to: order.customer_email,
+      error: message,
+    });
     return { success: false, error: message };
   }
 }
@@ -252,13 +245,11 @@ export async function sendAdminOrderNotification(
   order: Order
 ): Promise<{ success: boolean; error?: string }> {
   if (!TEMPLATES.ADMIN_ORDER_NOTIFICATION) {
-    console.error(
-      JSON.stringify({
-        event: 'email_template_missing',
-        type: 'admin_notification',
-        env: 'RESEND_TEMPLATE_ADMIN_NOTIFICATION',
-      })
-    );
+    log.error({
+      event: 'email_template_missing',
+      type: 'admin_notification',
+      env: 'RESEND_TEMPLATE_ADMIN_NOTIFICATION',
+    });
     return { success: false, error: 'Template not configured' };
   }
 
@@ -277,38 +268,32 @@ export async function sendAdminOrderNotification(
     });
 
     if (error) {
-      console.error(
-        JSON.stringify({
-          event: 'email_send_failed',
-          type: 'admin_notification',
-          order: order.order_number,
-          to: ADMIN_EMAIL,
-          templateId: TEMPLATES.ADMIN_ORDER_NOTIFICATION,
-          error: error.message,
-        })
-      );
-      return { success: false, error: error.message };
-    }
-
-    console.log(
-      JSON.stringify({
-        event: 'email_sent',
+      log.error({
+        event: 'email_send_failed',
         type: 'admin_notification',
         order: order.order_number,
         to: ADMIN_EMAIL,
-      })
-    );
+        templateId: TEMPLATES.ADMIN_ORDER_NOTIFICATION,
+        error: error.message,
+      });
+      return { success: false, error: error.message };
+    }
+
+    log.info({
+      event: 'email_sent',
+      type: 'admin_notification',
+      order: order.order_number,
+      to: ADMIN_EMAIL,
+    });
     return { success: true };
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error';
-    console.error(
-      JSON.stringify({
-        event: 'email_error',
-        type: 'admin_notification',
-        order: order.order_number,
-        error: message,
-      })
-    );
+    log.error({
+      event: 'email_error',
+      type: 'admin_notification',
+      order: order.order_number,
+      error: message,
+    });
     return { success: false, error: message };
   }
 }
@@ -394,33 +379,27 @@ export async function sendDbFailureAlert(details: {
     });
 
     if (error) {
-      console.error(
-        JSON.stringify({
-          event: 'db_failure_alert_send_failed',
-          order: details.orderNumber,
-          error: error.message,
-        })
-      );
+      log.error({
+        event: 'db_failure_alert_send_failed',
+        order: details.orderNumber,
+        error: error.message,
+      });
       return { success: false, error: error.message };
     }
 
-    console.log(
-      JSON.stringify({
-        event: 'db_failure_alert_sent',
-        order: details.orderNumber,
-        to: ADMIN_EMAIL,
-      })
-    );
+    log.info({
+      event: 'db_failure_alert_sent',
+      order: details.orderNumber,
+      to: ADMIN_EMAIL,
+    });
     return { success: true };
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error';
-    console.error(
-      JSON.stringify({
-        event: 'db_failure_alert_error',
-        order: details.orderNumber,
-        error: message,
-      })
-    );
+    log.error({
+      event: 'db_failure_alert_error',
+      order: details.orderNumber,
+      error: message,
+    });
     return { success: false, error: message };
   }
 }

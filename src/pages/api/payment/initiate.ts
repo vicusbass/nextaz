@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { log } from '../../../lib/logger';
 
 export const prerender = false;
 
@@ -373,7 +374,7 @@ export const POST: APIRoute = async ({ request }) => {
         throw new Error('Failed to create order - no result returned');
       }
       orderNumber = result.orderNumber;
-      console.log(JSON.stringify({ event: 'order_created', order: orderNumber }));
+      log.info({ event: 'order_created', order: orderNumber });
     } catch (dbError) {
       const errorMessage = dbError instanceof Error ? dbError.message : 'Unknown error';
       const isConnectionError =
@@ -385,18 +386,17 @@ export const POST: APIRoute = async ({ request }) => {
         errorMessage.includes('EHOSTUNREACH') ||
         errorMessage.includes('503');
 
-      console.error(
-        JSON.stringify({
-          event: 'order_create_failed',
-          error: errorMessage,
-          isConnectionError,
-        })
-      );
+      log.error({
+        event: 'order_create_failed',
+        error: errorMessage,
+        isConnectionError,
+      });
 
       const userError = isConnectionError
         ? 'Serviciul de comenzi este temporar indisponibil. Te rugăm să încerci din nou în câteva minute.'
         : 'A apărut o eroare la salvarea comenzii. Te rugăm să încerci din nou.';
 
+      await log.flush();
       return new Response(
         JSON.stringify({
           success: false,
@@ -410,7 +410,8 @@ export const POST: APIRoute = async ({ request }) => {
     // Check if Netopia is configured
     if (!isNetopiaConfigured()) {
       // Development mode - redirect to success page directly
-      console.log(JSON.stringify({ event: 'payment_mock', order: orderNumber }));
+      log.info({ event: 'payment_mock', order: orderNumber });
+      await log.flush();
       return new Response(
         JSON.stringify({
           success: true,
@@ -480,28 +481,25 @@ export const POST: APIRoute = async ({ request }) => {
       redirectUrl: `${origin}/payment/success?orderNumber=${orderNumber}`,
     };
 
-    console.log(
-      JSON.stringify({
-        event: 'payment_request',
-        order: orderNumber,
-        subtotal,
-        sgrTotal,
-        shippingPrice,
-        total,
-        items: validatedItems.map((i) => ({ name: i.name, price: i.price, qty: i.quantity })),
-      })
-    );
+    log.info({
+      event: 'payment_request',
+      order: orderNumber,
+      subtotal,
+      sgrTotal,
+      shippingPrice,
+      total,
+      items: validatedItems.map((i) => ({ name: i.name, price: i.price, qty: i.quantity })),
+    });
 
     const netopiaResult = await initiatePayment(paymentRequest);
 
     if (!netopiaResult.success) {
-      console.error(
-        JSON.stringify({
-          event: 'payment_initiation_failed',
-          order: orderNumber,
-          error: netopiaResult.error,
-        })
-      );
+      log.error({
+        event: 'payment_initiation_failed',
+        order: orderNumber,
+        error: netopiaResult.error,
+      });
+      await log.flush();
       return new Response(
         JSON.stringify({
           success: false,
@@ -515,17 +513,16 @@ export const POST: APIRoute = async ({ request }) => {
     try {
       await updateOrderPaymentReference(orderNumber, netopiaResult.ntpID);
     } catch (refError) {
-      console.warn(
-        JSON.stringify({
-          event: 'payment_ref_store_failed',
-          order: orderNumber,
-          error: refError instanceof Error ? refError.message : 'Unknown error',
-        })
-      );
+      log.warn({
+        event: 'payment_ref_store_failed',
+        order: orderNumber,
+        error: refError instanceof Error ? refError.message : 'Unknown error',
+      });
       // Continue anyway - payment can still proceed
     }
 
-    console.log(JSON.stringify({ event: 'payment_initiated', order: orderNumber }));
+    log.info({ event: 'payment_initiated', order: orderNumber });
+    await log.flush();
 
     return new Response(
       JSON.stringify({
@@ -536,12 +533,11 @@ export const POST: APIRoute = async ({ request }) => {
       { status: 200, headers: { 'Content-Type': 'application/json' } }
     );
   } catch (error) {
-    console.error(
-      JSON.stringify({
-        event: 'payment_error',
-        error: error instanceof Error ? error.message : 'Unknown error',
-      })
-    );
+    log.error({
+      event: 'payment_error',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+    await log.flush();
     return new Response(
       JSON.stringify({
         success: false,

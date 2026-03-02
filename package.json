@@ -15,6 +15,7 @@
     "@astrojs/sitemap": "^3.7.0",
     "@astrojs/svelte": "^7.2.5",
     "@astrojs/vercel": "^9.0.4",
+    "@axiomhq/js": "^1.4.0",
     "@fontsource-variable/red-hat-display": "^5.2.8",
     "@portabletext/types": "^3.0.0",
     "@sanity/client": "^7.13.1",
