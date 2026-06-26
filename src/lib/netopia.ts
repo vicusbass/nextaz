@@ -7,6 +7,12 @@
  */
 
 import { Netopia, Ipn } from 'netopia-payment2';
+import {
+  NETOPIA_API_KEY,
+  NETOPIA_POS_SIGNATURE,
+  NETOPIA_PUBLIC_KEY,
+  NETOPIA_SANDBOX,
+} from 'astro:env/server';
 import { log } from './logger';
 
 // ============================================================================
@@ -21,13 +27,11 @@ export interface NetopiaConfig {
 }
 
 export function getNetopiaConfig(): NetopiaConfig {
-  const apiKey = import.meta.env.NETOPIA_API_KEY;
-  const posSignature = import.meta.env.NETOPIA_POS_SIGNATURE;
-  const publicKey = import.meta.env.NETOPIA_PUBLIC_KEY;
+  const apiKey = NETOPIA_API_KEY;
+  const posSignature = NETOPIA_POS_SIGNATURE;
+  const publicKey = NETOPIA_PUBLIC_KEY;
 
-  // Handle both boolean true and string 'true' (Vite/Astro can convert 'true' to boolean at runtime)
-  const sandboxEnv = import.meta.env.NETOPIA_SANDBOX as unknown;
-  const isSandbox = sandboxEnv === true || sandboxEnv === 'true';
+  const isSandbox = NETOPIA_SANDBOX === 'true';
   const isLive = !isSandbox;
 
   if (!apiKey || !posSignature) {
@@ -38,7 +42,7 @@ export function getNetopiaConfig(): NetopiaConfig {
 }
 
 export function isNetopiaConfigured(): boolean {
-  return !!(import.meta.env.NETOPIA_API_KEY && import.meta.env.NETOPIA_POS_SIGNATURE);
+  return !!(NETOPIA_API_KEY && NETOPIA_POS_SIGNATURE);
 }
 
 // ============================================================================

@@ -1,7 +1,8 @@
 import { defineCollection, z } from 'astro:content';
+import { glob } from 'astro/loaders';
 
 const wines = defineCollection({
-  type: 'data',
+  loader: glob({ pattern: '**/*.yaml', base: './src/content/wines' }),
   schema: z.object({
     order: z.number(),
     id: z.string(),

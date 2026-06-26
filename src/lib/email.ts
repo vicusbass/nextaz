@@ -1,8 +1,13 @@
 import { Resend } from 'resend';
+import {
+  RESEND_API_KEY,
+  RESEND_TEMPLATE_CUSTOMER_CONFIRMATION,
+  RESEND_TEMPLATE_ADMIN_NOTIFICATION,
+} from 'astro:env/server';
 import type { Order, OrderItem } from './database.types';
 import { log } from './logger';
 
-const resend = new Resend(import.meta.env.RESEND_API_KEY);
+const resend = new Resend(RESEND_API_KEY);
 
 // Email addresses
 const ADMIN_EMAIL = 'contact@nextaz.ro';
@@ -12,9 +17,9 @@ const FROM_EMAIL = 'Nextaz <comenzi@nextaz.ro>';
 // https://resend.com/templates
 const TEMPLATES = {
   // Template for customer order confirmation
-  CUSTOMER_ORDER_CONFIRMATION: import.meta.env.RESEND_TEMPLATE_CUSTOMER_CONFIRMATION || '',
+  CUSTOMER_ORDER_CONFIRMATION: RESEND_TEMPLATE_CUSTOMER_CONFIRMATION || '',
   // Template for admin new order notification
-  ADMIN_ORDER_NOTIFICATION: import.meta.env.RESEND_TEMPLATE_ADMIN_NOTIFICATION || '',
+  ADMIN_ORDER_NOTIFICATION: RESEND_TEMPLATE_ADMIN_NOTIFICATION || '',
 };
 
 /**

@@ -1,7 +1,8 @@
 import { Axiom } from '@axiomhq/js';
+import { AXIOM_TOKEN, AXIOM_DATASET } from 'astro:env/server';
 
-const token = import.meta.env.AXIOM_TOKEN;
-const dataset = import.meta.env.AXIOM_DATASET;
+const token = AXIOM_TOKEN;
+const dataset = AXIOM_DATASET;
 
 const axiom = token && dataset ? new Axiom({ token }) : null;
 

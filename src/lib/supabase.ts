@@ -1,22 +1,24 @@
 import { createClient } from '@supabase/supabase-js';
+import { SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY } from 'astro:env/server';
 import type { Database, OrderInsert, OrderUpdate, OrderItem } from './database.types';
 import { log } from './logger';
 
-const supabaseUrl = import.meta.env.SUPABASE_URL;
-const supabaseServiceRoleKey = import.meta.env.SUPABASE_SERVICE_ROLE_KEY;
-
-if (!supabaseUrl || !supabaseServiceRoleKey) {
+if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
   log.warn({ event: 'supabase_config', warning: 'credentials_missing' });
 }
 
 // Use service role key for server-side operations (bypasses RLS)
 // This client should ONLY be used in server-side API routes, never exposed to the client
-export const supabase = createClient<Database>(supabaseUrl || '', supabaseServiceRoleKey || '', {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false,
-  },
-});
+export const supabase = createClient<Database>(
+  SUPABASE_URL || '',
+  SUPABASE_SERVICE_ROLE_KEY || '',
+  {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
+  }
+);
 
 export interface CreateOrderParams {
   customer: {

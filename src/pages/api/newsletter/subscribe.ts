@@ -1,9 +1,9 @@
 import type { APIRoute } from 'astro';
+import { MAILERLITE_API_KEY } from 'astro:env/server';
 import { log } from '../../../lib/logger';
 
 export const prerender = false;
 
-const MAILERLITE_API_KEY = import.meta.env.MAILERLITE_API_KEY;
 const MAILERLITE_API_URL = 'https://connect.mailerlite.com/api';
 
 export const POST: APIRoute = async ({ request }) => {
