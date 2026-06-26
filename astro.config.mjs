@@ -49,6 +49,7 @@ export default defineConfig({
       NETOPIA_SANDBOX: envField.string({ context: 'server', access: 'secret', optional: true }),
       AXIOM_TOKEN: envField.string({ context: 'server', access: 'secret', optional: true }),
       AXIOM_DATASET: envField.string({ context: 'server', access: 'secret', optional: true }),
+      CRON_SECRET: envField.string({ context: 'server', access: 'secret', optional: true }),
     },
   },
 
